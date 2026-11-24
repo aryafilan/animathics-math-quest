@@ -1,3 +1,9 @@
+## v0.5.1 — Curated catalog
+
+- 10 user-selected titles shown in their specified order.
+- 18 remaining titles available in a collapsed playable archive.
+- No changes to game files or mechanics.
+
 ## v0.5.0 — Arcade expansion
 
 - 6 new distinct game prototypes and 18 missions; original Bazar Alkimia added.

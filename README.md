@@ -1,3 +1,20 @@
+# Math Quest · v0.5.1
+
+[Mainkan katalog](https://aryafilan.github.io/animathics-math-quest/)
+
+10 game pilihan di katalog utama, 18 game lain di arsip yang dapat dibuka. Tidak ada perubahan gameplay atau penghapusan source. Urutan pilihan:
+
+- Quadratic Raid
+- Feasible Zone
+- Inequality Raid
+- Transform Combo
+- Skybound Transform Quest
+- Lingkaran Meteor
+- Bazar Alkimia SPLDV
+- Laser Line
+- Cosmic Navigator
+- Crystal Mines
+
 # Math Quest · v0.5.0
 
 [Play all games](https://aryafilan.github.io/animathics-math-quest/)
