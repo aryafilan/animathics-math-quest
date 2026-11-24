@@ -1,3 +1,7 @@
+## v0.6.1 — Mode presentasi
+
+[Demo Nexus Rift](https://aryafilan.github.io/animathics-math-quest/games/nexus-rift/?demo=1) · pilih mode presentasi atau gunakan tombol PASS / tombol P. PASS melewati bagian aktif (tambang/alkimia, gerbang, satu pulau, satu gelombang boss). Progres demo tidak ditulis ke checkpoint normal. Game lain tidak diubah.
+
 # Math Quest · v0.6.0
 
 [Nexus Rift — The Last Core](https://aryafilan.github.io/animathics-math-quest/games/nexus-rift/)

@@ -1,3 +1,8 @@
+## v0.6.1 — Presentation pass
+
+- Add demo mode and PASS button / P shortcut to Nexus Rift only.
+- Skip individual active steps, islands and boss waves; preserve normal saved progress.
+
 ## v0.6.0 — Nexus Rift
 
 - Add one standalone connected adventure, four missions and five guardian waves.
