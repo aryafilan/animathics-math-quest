@@ -1,5 +1,18 @@
 [
   {
+    "id": "nexus-rift",
+    "title": "Nexus Rift — The Last Core",
+    "topic": "Koneksi konsep matematika",
+    "level": "SMP/SMA",
+    "rounds": 4,
+    "genre": "Story adventure",
+    "color": "#90edda",
+    "symbol": "✦",
+    "description": "Pulihkan inti Nexus melalui empat misi terhubung: energi, laser, pulau langit, dan pertahanan terakhir.",
+    "archived": false,
+    "adventure": true
+  },
+  {
     "id": "quadratic-raid",
     "title": "Quadratic Raid",
     "topic": "Pertidaksamaan kuadrat",

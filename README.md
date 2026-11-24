@@ -1,3 +1,9 @@
+# Math Quest · v0.6.0
+
+[Nexus Rift — The Last Core](https://aryafilan.github.io/animathics-math-quest/games/nexus-rift/)
+
+One new standalone adventure links the ten curated worlds through a forge, light gate, sky corridor and final guardian. Ten original links remain intact; all 28 previous titles and their ordering are preserved (10 featured, 18 archived). Nexus Rift uses a separate engine copy, local checkpoint, and original-game links that open in new tabs. No progress is read from the original games. Run `node scripts/test-nexus.mjs` for the mission constraints. WebGL playtesting remains unverified.
+
 # Math Quest · v0.5.1
 
 [Mainkan katalog](https://aryafilan.github.io/animathics-math-quest/)

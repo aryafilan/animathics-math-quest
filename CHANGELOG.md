@@ -1,3 +1,9 @@
+## v0.6.0 — Nexus Rift
+
+- Add one standalone connected adventure, four missions and five guardian waves.
+- Add a featured adventure banner without changing the previous ten-game order or eighteen-game archive.
+- Add independent math checks, isolated engine and local checkpoints. Existing gameplay files unchanged.
+
 ## v0.5.1 — Curated catalog
 
 - 10 user-selected titles shown in their specified order.

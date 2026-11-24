@@ -7,3 +7,5 @@
 - Add metadata to arcade/catalog.json and the root index.html. Keep worlds/catalog.json and legacy games.json for existing validation.
 
 - Prefer direct playable actions, replayable challenges, responsive controls and feedback; do not present a prototype as a polished release before visual and end-to-end testing.
+
+- Nexus Rift is a separate adventure featured above the user's ten selected games. Preserve all existing game source and order. Portal links open originals without changing or claiming their progress. Nexus checkpoints are local and separate. Keep its own engine copy and files isolated.
