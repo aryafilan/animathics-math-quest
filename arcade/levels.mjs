@@ -4,7 +4,7 @@ export const levels={
 'harvest-kingdom':[{plots:6,water:9,a:{w:1,v:3},b:{w:3,v:7}},{plots:7,water:12,a:{w:1,v:3},b:{w:3,v:8}},{plots:8,water:14,a:{w:1,v:4},b:{w:4,v:11}}],
 'potion-master':[{total:100,target:30,c1:0,c2:100},{total:100,target:50,c1:20,c2:80},{total:120,target:55,c1:10,c2:70}],
 'pirate-expedition':[{bearing:45,distance:16,rocks:[[-6,-4],[5,-3],[14,-6]]},{bearing:315,distance:20,rocks:[[3,-6],[-7,-3],[-3,-14]]},{bearing:120,distance:19,rocks:[[7,0],[5,9],[15,-5]]}],
-'math-fortress':[{budget:6,count:5,hp:3,speed:2.6},{budget:8,count:7,hp:4,speed:2.8},{budget:10,count:9,hp:5,speed:3}]
+'math-fortress':[{budget:6,count:6,hp:6,speed:3},{budget:8,count:8,hp:7,speed:2.8},{budget:10,count:10,hp:8,speed:3}]
 };
 export const gcd=(a,b)=>b?gcd(b,a%b):a;
 export const flight=(x,v)=>.8+v*x/8-x*x/16;

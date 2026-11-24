@@ -12,7 +12,7 @@ export const ui={
  buttons:()=>{$('controls').replaceChildren()},
  button:(label,fn)=>{let b=document.createElement('button');b.className='primary';b.textContent=label;b.onclick=()=>{if(live())fn()};$('controls').append(b);return b},
  range:(label,min,max,val,fn)=>{let row=document.createElement('label'),s=document.createElement('span'),i=document.createElement('input');i.type='range';i.min=min;i.max=max;i.value=val;i.step=1;s.textContent=label+': '+val;row.append(s,i);$('controls').append(row);i.oninput=()=>{if(!live())return;s.textContent=label+': '+i.value;fn(+i.value)};return i},
- hold:(label,fn)=>{let b=document.createElement('button');b.className='primary';b.textContent=label;let timer=null;const stop=()=>{clearInterval(timer);timer=null};b.onpointerdown=e=>{e.preventDefault();if(!live())return;b.setPointerCapture(e.pointerId);stop();fn();timer=setInterval(()=>{if(live())fn();else stop()},180)};for(let ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,stop);b.onkeydown=e=>{if((e.code==='Space'||e.code==='Enter')&&live()){e.preventDefault();fn()}};$('controls').append(b);return b},
+ hold:(label,fn)=>{let b=document.createElement('button');b.className='primary';b.textContent=label;let timer=null;const stop=()=>{clearInterval(timer);timer=null};b.onpointerdown=e=>{e.preventDefault();if(!live())return;b.setPointerCapture(e.pointerId);stop();let e0=epoch;fn();timer=setInterval(()=>{if(live()&&e0===epoch)fn();else stop()},180)};for(let ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,stop);b.onkeydown=e=>{if((e.code==='Space'||e.code==='Enter')&&live()){e.preventDefault();fn()}};$('controls').append(b);return b},
  movement:(yes=true,act='Aksi [E]')=>{$('movement').hidden=!yes;$('act').hidden=!act;if(act)$('act').textContent=act},
  notify:(s,good=true)=>{clearTimeout(toastTimer);$('message').textContent=s;$('message').dataset.ok=good;$('message').classList.add('show');toastTimer=setTimeout(()=>$('message').classList.remove('show'),2300);W.tone(good)}
 };
@@ -24,7 +24,7 @@ let config;
 export function start(c){config=c;
  function load(){epoch++;active=false;done=false;onFrame=()=>{};onAction=()=>{};onTap=()=>{};W.keys.clear();W.pad.clear();particles.length=0;ui.buttons();ui.status('');ui.meter(0);ui.movement(false,'');$('round').textContent='MISI '+(level+1)+' / '+c.levels.length;$('message').classList.remove('show');let x=c.build(c.levels[level],level);onFrame=x.frame||(()=>{});onAction=x.action||(()=>{});onTap=x.tap||(()=>{});active=true}
  W.update=dt=>{onFrame(dt,live());for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.life-=dt;p.v.y-=8*dt;p.m.position.addScaledVector(p.v,dt);p.m.rotation.y+=dt*7;if(p.life<=0){W.root.remove(p.m);p.m.geometry.dispose();p.m.material.dispose();particles.splice(i,1)}}};
- W.action=()=>{if(live()&&!$('intro').open&&!['BUTTON','INPUT'].includes(document.activeElement?.tagName))onAction()};
+ W.action=()=>{if(live()&&!$('intro').open&&document.activeElement?.tagName!=='INPUT')onAction()};
  let down=null,canvas=W.renderer.domElement,ray=new T.Raycaster();
  canvas.addEventListener('pointerdown',e=>{down=[e.clientX,e.clientY]});
  canvas.addEventListener('pointerup',e=>{if(!down||!live())return;let d=Math.hypot(e.clientX-down[0],e.clientY-down[1]);down=null;if(d>9)return;ray.setFromCamera(new T.Vector2(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2),W.camera);onTap(ray)});
