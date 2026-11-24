@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>BAZAR ALKIMIA SPLDV | Action Crystal Hunter</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap');
+  *{box-sizing:border-box;user-select:none}
+  html,body{margin:0;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:#1a1025;touch-action:none}
+  canvas{display:block}
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+  .topbar{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .card{background:rgba(28,16,42,0.93);backdrop-filter:blur(12px);color:#fff;padding:15px 20px;border-radius:20px;border:2px solid #e040fb;box-shadow:0 12px 32px rgba(0,0,0,0.5);max-width:480px}
+  .badge{display:inline-block;background:linear-gradient(90deg,#e040fb,#7c4dff);color:#fff;font-family:'Fredoka',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px}
+  .card h1{font-family:'Fredoka',sans-serif;margin:5px 0 4px;font-size:21px;color:#ffd54f}
+  .card p{margin:0;font-size:13px;color:#ebd8f5;line-height:1.45}
+  .eq-box{margin-top:9px;background:#11081c;border:1px solid #ab47bc;padding:10px 13px;border-radius:12px;font-family:monospace;font-size:14px;line-height:1.65;color:#80d8ff;font-weight:900}
+  .right-hud{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .pill{background:rgba(28,16,42,0.93);color:#fff;padding:10px 16px;border-radius:99px;border:2px solid #ab47bc;font-weight:900;font-size:13px;pointer-events:auto}
+  .pill b{color:#ffd54f}
+  .btn-drop{background:#ff5252;color:#fff;border:0;padding:9px 16px;border-radius:99px;font-weight:900;cursor:pointer;pointer-events:auto;box-shadow:0 4px 0 #b71c1c;font:inherit}
+  .controls-tip{position:absolute;bottom:16px;left:16px;background:rgba(28,16,42,0.88);color:#e1bee7;padding:10px 14px;border-radius:14px;font-size:12px;font-weight:800}
+  .controls-tip kbd{background:#ffffff24;color:#fff;padding:2px 6px;border-radius:5px}
+  #toast{position:fixed;top:92px;left:50%;transform:translateX(-50%);background:#140921;color:#ffd54f;border:2px solid #ffd54f;padding:11px 22px;border-radius:99px;font-weight:900;font-size:14px;z-index:40;opacity:0;transition:opacity .25s;pointer-events:none;text-align:center}
+  #toast.show{opacity:1}
+  #modal{position:fixed;inset:0;background:rgba(12,6,20,0.88);backdrop-filter:blur(8px);display:grid;place-items:center;z-index:50;padding:20px}
+  #modal.hide{display:none!important}
+  .dialog{background:#221233;border:4px solid #e040fb;color:#fff;max-width:490px;width:100%;border-radius:28px;padding:30px;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,0.75)}
+  .dialog h2{font-family:'Fredoka',sans-serif;font-size:30px;color:#ffd54f;margin:8px 0}
+  .dialog p{color:#e8daef;font-size:15px;line-height:1.6}
+  .cta{background:linear-gradient(135deg,#e040fb,#7c4dff);color:#fff;font:inherit;font-weight:900;font-size:16px;border:0;border-radius:14px;padding:15px 22px;width:100%;cursor:pointer;margin-top:14px;box-shadow:0 6px 0 #4a148c}
+  #mobile{display:none;position:fixed;inset:0;pointer-events:none;z-index:20}
+  .joy{position:absolute;bottom:28px;left:24px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.18);border:3px solid rgba(255,255,255,0.45);pointer-events:auto;touch-action:none}
+  .knob{position:absolute;top:36px;left:36px;width:48px;height:48px;border-radius:50%;background:#fff}
+  .m-btns{position:absolute;bottom:32px;right:24px;display:flex;gap:12px;pointer-events:auto}
+  .m-btns button{width:64px;height:64px;border-radius:50%;background:#ffd54f;color:#111;font-size:15px;font-weight:900;border:3px solid #fff}
+  @media(hover:none),(pointer:coarse){#mobile{display:block}.controls-tip{display:none}}
+</style>
+</head>
+<body>
+<div id="hud">
+  <div class="topbar">
+    <div class="card">
+      <span class="badge">SPLDV • ACTION CRYSTAL HUNTER</span>
+      <h1 id="rTitle">Resep 1: Ramuan Harmoni</h1>
+      <p id="rDesc">Kejar dan pungut <b>Kristal Surya (x)</b> & <b>Kristal Bulan (y)</b> di arena sambil menghindari Monster Bayangan, lalu masukkan ke <b>Kuali Hijau</b>!</p>
+      <div class="eq-box" id="rMath">Memuat sistem persamaan...</div>
+    </div>
+    <div class="right-hud">
+      <div class="pill">🧪 RESEP <b id="stStage">1 / 4</b></div>
+      <div class="pill">🟠 SURYA (x): <b id="stX">0</b> &nbsp;|&nbsp; 🔵 BULAN (y): <b id="stY">0</b></div>
+      <button class="btn-drop" id="dropBtn">🗑️ Buang Kristal [R]</button>
+    </div>
+  </div>
+  <div class="controls-tip"><kbd>WASD</kbd> Lari Pungut Kristal &nbsp;<kbd>DEKATI KUALI HIJAU</kbd> Racik Ramuan &nbsp;<kbd>R</kbd> Kosongkan Tas &nbsp;<kbd>SPACE</kbd> Lompat Hindari Monster</div>
+</div>
+
+<div id="toast"></div>
+
+<div id="modal">
+  <div class="dialog">
+    <div style="font-size:58px">🧙‍♂️💎🧪</div>
+    <h2>BAZAR ALKIMIA SPLDV</h2>
+    <p>Tidak ada tombol di laboratorium ini! Untuk meracik eliksir legendaris, kamu harus mencari solusi <b>Sistem Persamaan Linear Dua Variabel (SPLDV)</b>.<br><br>Berlarilah memungut <b>Kristal Surya (x)</b> dan <b>Kristal Bulan (y)</b> yang bertebaran di lantai sambil <b>melompati kejaran Monster Golem Bayangan</b>, lalu bawa jumlah kristal yang tepat ke <b>Kuali Agung</b>!</p>
+    <button class="cta" onclick="document.getElementById('modal').classList.add('hide')">Mulai Berburu Kristal ▶</button>
+  </div>
+</div>
+
+<div id="mobile">
+  <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
+  <div class="m-btns">
+    <button id="mJump">LOMPAT</button>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+
+const $ = s => document.querySelector(s);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a0e29);
+scene.fog = new THREE.FogExp2(0x1a0e29, 0.011);
+
+const camera = new THREE.PerspectiveCamera(58, innerWidth/innerHeight, 0.1, 220);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+renderer.shadowMap.enabled = true;
+document.body.prepend(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xf3e5f5, 0x12081c, 1.55));
+const sun = new THREE.DirectionalLight(0xffe082, 2.0);
+sun.position.set(18, 40, 24);
+sun.castShadow = true;
+scene.add(sun);
+
+function drawRoundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  if(typeof ctx.roundRect === 'function') ctx.roundRect(x, y, w, h, r);
+  else ctx.rect(x, y, w, h);
+  ctx.closePath();
+}
+
+function createStudTex(hex1, hex2){
+  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = hex1; ctx.fillRect(0,0,128,128);
+  ctx.strokeStyle = hex2; ctx.lineWidth = 4; ctx.strokeRect(0,0,128,128);
+  for(let x=32;x<128;x+=64) for(let y=32;y<128;y+=64){
+    ctx.fillStyle = hex2; ctx.beginPath(); ctx.arc(x,y,14,0,Math.PI*2); ctx.fill();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(14, 12);
+  return tex;
+}
+
+function sfx(freq=520, dur=0.1, type='sine'){
+  try{
+    const ac = sfx.ac || (sfx.ac = new (window.AudioContext||window.webkitAudioContext)());
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.08, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur);
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime+dur);
+  }catch(e){}
+}
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.tm); toast.tm = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+function makeLabel(txt, x, y, z, bg='#1a0e29', fg='#ffd54f', s=0.72){
+  const c = document.createElement('canvas'); c.width = 512; c.height = 128;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = bg; drawRoundRect(ctx, 6, 6, 500, 116, 28); ctx.fill();
+  ctx.strokeStyle = fg; ctx.lineWidth = 6; ctx.stroke();
+  ctx.font = '900 38px Nunito, sans-serif'; ctx.fillStyle = fg;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(txt, 256, 66);
+  const tex = new THREE.CanvasTexture(c);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false}));
+  sp.position.set(x, y, z); sp.scale.set(4*s, 1*s, 1);
+  scene.add(sp); return {sprite:sp, ctx, tex};
+}
+
+// Alchemy Arena Floor
+const floor = new THREE.Mesh(new THREE.BoxGeometry(36, 0.8, 30), new THREE.MeshStandardMaterial({map:createStudTex('#2b1742','#3d225c'), roughness:0.7}));
+floor.position.y = -0.4; floor.receiveShadow = true; scene.add(floor);
+
+// Glowing Cauldron in Center Back (0, 0, -9.5) — Fixed syntax bug `const soup`
+const cauldron = new THREE.Group(); cauldron.position.set(0, 0, -9.5); scene.add(cauldron);
+const pot = new THREE.Mesh(new THREE.CylinderGeometry(2.3, 1.7, 2.4, 24), new THREE.MeshStandardMaterial({color:0x263238, metalness:0.6, roughness:0.3}));
+pot.position.y = 1.2; cauldron.add(pot);
+const soup = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.1, 0.3, 24), new THREE.MeshStandardMaterial({color:0x00e676, emissive:0x00c853, emissiveIntensity:0.85}));
+soup.position.y = 2.35; cauldron.add(soup);
+const cauldronRing = new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.14, 10, 32), new THREE.MeshBasicMaterial({color:0x00e676}));
+cauldronRing.rotation.x = Math.PI/2; cauldronRing.position.y = 0.15; cauldron.add(cauldronRing);
+makeLabel('🧪 KUALI AGUNG (SETOR DI SINI)', 0, 4.3, -9.5, '#072618', '#00e676', 0.78);
+
+// Two Giant Golden Balance Scales for Equation 1 (Left) and Equation 2 (Right)
+function createBalanceScale(x, z, title){
+  const root = new THREE.Group(); root.position.set(x, 0, z); scene.add(root);
+  const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.55, 5.2, 14), new THREE.MeshStandardMaterial({color:0xffca28, metalness:0.7, roughness:0.25}));
+  pillar.position.y = 2.6; root.add(pillar);
+  const beamGroup = new THREE.Group(); beamGroup.position.y = 5.0; root.add(beamGroup);
+  const beam = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.28, 0.35), new THREE.MeshStandardMaterial({color:0xffd54f, metalness:0.8}));
+  beamGroup.add(beam);
+  for(let sx of [-2.5, 2.5]){
+    const pan = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 0.8, 0.3, 16), new THREE.MeshStandardMaterial({color:0xab47bc, emissive:0x6a1b9a, emissiveIntensity:0.4}));
+    pan.position.set(sx, -1.4, 0); beamGroup.add(pan);
+  }
+  const lbl = makeLabel(title, x, 6.8, z, '#221233', '#ffd54f', 0.8);
+  return {root, beamGroup, lbl};
+}
+const scale1 = createBalanceScale(-9.5, -9.5, 'NERACA PERSAMAAN 1');
+const scale2 = createBalanceScale( 9.5, -9.5, 'NERACA PERSAMAAN 2');
+
+// Detailed Roblox Alchemist Mage Avatar
+function createMageAvatar(){
+  const root = new THREE.Group();
+  const robeMat = new THREE.MeshStandardMaterial({color:0x6a1b9a, roughness:0.45});
+  const goldMat = new THREE.MeshStandardMaterial({color:0xffd54f, metalness:0.7, roughness:0.2});
+  const skinMat = new THREE.MeshStandardMaterial({color:0xffcc80});
+  const gemMat = new THREE.MeshStandardMaterial({color:0x00e5ff, emissive:0x00b0ff, emissiveIntensity:0.9});
+
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(1.15, 1.24, 0.58), robeMat);
+  torso.position.y = 1.62; torso.castShadow = true; root.add(torso);
+  const trim = new THREE.Mesh(new THREE.BoxGeometry(0.32, 1.25, 0.60), goldMat);
+  trim.position.y = 1.62; root.add(trim);
+
+  const head = new THREE.Group(); head.position.y = 2.6; root.add(head);
+  const skull = new THREE.Mesh(new THREE.CylinderGeometry(0.43, 0.43, 0.75, 22), skinMat);
+  skull.castShadow = true; head.add(skull);
+  const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.88, 0.88, 0.08, 20), robeMat);
+  brim.position.y = 0.36; head.add(brim);
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(0.52, 1.15, 16), robeMat);
+  cone.position.y = 0.92; head.add(cone);
+  const hatBand = new THREE.Mesh(new THREE.CylinderGeometry(0.50, 0.52, 0.14, 16), goldMat);
+  hatBand.position.y = 0.44; head.add(hatBand);
+
+  function makeArm(sx, hasStaff){
+    const g = new THREE.Group(); g.position.set(sx, 2.15, 0);
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.46, 1.1, 0.46), robeMat);
+    arm.position.y = -0.52; arm.castShadow = true; g.add(arm);
+    if(hasStaff){
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 2.4, 10), goldMat);
+      rod.position.set(0, -0.6, -0.45); rod.rotation.x = 0.25; g.add(rod);
+      const orb = new THREE.Mesh(new THREE.OctahedronGeometry(0.26, 0), gemMat);
+      orb.position.set(0, 0.55, -0.72); g.add(orb);
+    }
+    root.add(g); return g;
+  }
+  function makeLeg(sx){
+    const g = new THREE.Group(); g.position.set(sx, 1.02, 0);
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.95, 0.50), robeMat);
+    leg.position.y = -0.48; leg.castShadow = true; g.add(leg);
+    root.add(g); return g;
+  }
+  const lArm = makeArm(-0.84, false), rArm = makeArm(0.84, true);
+  const lLeg = makeLeg(-0.29), rLeg = makeLeg(0.29);
+
+  // Orbiting Collected Crystals around the Player
+  const orbitGroup = new THREE.Group();
+  orbitGroup.position.y = 1.8;
+  root.add(orbitGroup);
+
+  return {root, lArm, rArm, lLeg, rLeg, orbitGroup};
+}
+
+const mage = createMageAvatar();
+const player = mage.root;
+player.position.set(0, 0, 8);
+scene.add(player);
+
+// Wild Collectible Crystals in the Arena (Surya = Orange 'x', Bulan = Blue 'y')
+const crystals = [];
+const matSurya = new THREE.MeshStandardMaterial({color:0xff9100, emissive:0xff3d00, emissiveIntensity:0.8});
+const matBulan = new THREE.MeshStandardMaterial({color:0x00e5ff, emissive:0x0091ea, emissiveIntensity:0.8});
+
+const crystalPositions = [
+  [-11, -2, 'x'], [-6, 2, 'x'], [-12, 6, 'x'], [-5, -4, 'x'], [-9, 9, 'x'], [0, 3, 'x'],
+  [ 11, -2, 'y'], [ 6, 2, 'y'], [ 12, 6, 'y'], [ 5, -4, 'y'], [ 9, 9, 'y'], [0, 9, 'y']
+];
+crystalPositions.forEach(([cx, cz, type])=>{
+  const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.65, 0), type==='x' ? matSurya : matBulan);
+  mesh.position.set(cx, 1.1, cz);
+  scene.add(mesh);
+  makeLabel(type==='x' ? '🟠 +1 SURYA (x)' : '🔵 +1 BULAN (y)', cx, 2.3, cz, '#140921', type==='x'?'#ffab40':'#40c4ff', 0.45);
+  crystals.push({mesh, x:cx, z:cz, type, cooldown:0});
+});
+
+// 2 Patrol Shadow Monsters that try to knock crystals out of the player's hands!
+const monsters = [];
+for(let side of [-1, 1]){
+  const mg = new THREE.Group();
+  mg.position.set(side*7, 0, 1);
+  const mBody = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.8, 1.2), new THREE.MeshStandardMaterial({color:0x111111, roughness:0.4}));
+  mBody.position.y = 1.2; mg.add(mBody);
+  const mEyes = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.25, 1.25), new THREE.MeshBasicMaterial({color:0xff1744}));
+  mEyes.position.y = 1.6; mg.add(mEyes);
+  scene.add(mg);
+  monsters.push({group:mg, baseX:side*7, baseZ:1, phase: side > 0 ? 0 : Math.PI});
+}
+
+const recipes = [
+  {title: 'Resep 1: Eliminasi Langsung',  a1: 1, b1: 1, c1: 7,  a2: 2, b2: -1, c2: 5,  tx: 4, ty: 3},
+  {title: 'Resep 2: Substitusi Kristal',  a1: 1, b1: 2, c1: 12, a2: 3, b2: -1, c2: 8,  tx: 4, ty: 4},
+  {title: 'Resep 3: Eliminasi Kelipatan', a1: 2, b1: 3, c1: 19, a2: 3, b2: 2,  c2: 16, tx: 2, ty: 5},
+  {title: 'Resep 4: Eliksir Grandmaster', a1: 4, b1: -2, c1: 14,a2: 2, b2: 3,  c2: 23, tx: 5, ty: 3}
+];
+
+let curR = 0, valX = 0, valY = 0, brewLock = false;
+
+function updateLabel(lblObj, text, borderCol){
+  const {ctx, tex} = lblObj;
+  ctx.clearRect(0,0,512,128);
+  ctx.fillStyle = '#221233'; drawRoundRect(ctx, 6, 6, 500, 116, 28); ctx.fill();
+  ctx.strokeStyle = borderCol; ctx.lineWidth = 6; ctx.stroke();
+  ctx.font = '900 36px Nunito, sans-serif'; ctx.fillStyle = borderCol;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, 256, 66);
+  tex.needsUpdate = true;
+}
+
+function fmtTerm(coef, sym){
+  const sign = coef < 0 ? '−' : '+';
+  const abs = Math.abs(coef);
+  return `${sign} ${abs===1?'':abs}${sym}`;
+}
+
+function rebuildOrbitCrystals(){
+  while(mage.orbitGroup.children.length) mage.orbitGroup.remove(mage.orbitGroup.children[0]);
+  const total = valX + valY;
+  for(let i=0; i<total; i++){
+    const isX = i < valX;
+    const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.24, 0), isX ? matSurya : matBulan);
+    const ang = (i / Math.max(1, total)) * Math.PI * 2;
+    gem.position.set(Math.cos(ang)*1.25, 0, Math.sin(ang)*1.25);
+    mage.orbitGroup.add(gem);
+  }
+}
+
+function refreshAlchemy(){
+  const r = recipes[curR];
+  const lhs1 = r.a1*valX + r.b1*valY;
+  const lhs2 = r.a2*valX + r.b2*valY;
+  const ok1 = (lhs1 === r.c1), ok2 = (lhs2 === r.c2);
+
+  $('#rTitle').textContent = r.title;
+  $('#stStage').textContent = `${curR+1} / ${recipes.length}`;
+  $('#stX').textContent = valX;
+  $('#stY').textContent = valY;
+
+  $('#rMath').innerHTML = `
+    (1) ${r.a1===1?'':r.a1}x ${fmtTerm(r.b1,'y')} = <b>${r.c1}</b> &nbsp;→ Tasmu: <b>${lhs1}</b> ${ok1?'✅':'❌'}<br>
+    (2) ${r.a2===1?'':r.a2}x ${fmtTerm(r.b2,'y')} = <b>${r.c2}</b> &nbsp;→ Tasmu: <b>${lhs2}</b> ${ok2?'✅':'❌'}`;
+
+  updateLabel(scale1.lbl, `Pers 1: ${lhs1} vs Target ${r.c1}`, ok1 ? '#00e676' : '#ffd54f');
+  updateLabel(scale2.lbl, `Pers 2: ${lhs2} vs Target ${r.c2}`, ok2 ? '#00e676' : '#ffd54f');
+
+  scale1.beamGroup.rotation.z = THREE.MathUtils.clamp((r.c1 - lhs1)*0.08, -0.45, 0.45);
+  scale2.beamGroup.rotation.z = THREE.MathUtils.clamp((r.c2 - lhs2)*0.08, -0.45, 0.45);
+  rebuildOrbitCrystals();
+}
+refreshAlchemy();
+
+function resetBag(){
+  valX = 0; valY = 0;
+  crystals.forEach(c=>{ c.cooldown = 0; c.mesh.visible = true; });
+  sfx(320, 0.1);
+  toast('🗑️ Tas kristal dikosongkan! Pungut kembali kristal yang sesuai.');
+  refreshAlchemy();
+}
+$('#dropBtn').onclick = resetBag;
+
+const keys = new Set(), joyVec = {x:0, y:0};
+let camYaw = 0, camPitch = 0.52, camDist = 15.5, velY = 0, knockX = 0, knockZ = 0;
+
+window.addEventListener('keydown', e=>{
+  keys.add(e.code);
+  if(e.code==='Space' && player.position.y <= 0.05 && $('#modal').classList.contains('hide')){
+    velY = 9.5; sfx(420, 0.08);
+  }
+  if(e.code==='KeyR' || e.code==='KeyQ') resetBag();
+});
+window.addEventListener('keyup', e=>keys.delete(e.code));
+
+let drag = false, lx = 0, ly = 0;
+renderer.domElement.addEventListener('pointerdown', e=>{
+  if(e.clientX < 180 && matchMedia('(hover:none),(pointer:coarse)').matches) return;
+  drag = true; lx = e.clientX; ly = e.clientY;
+});
+window.addEventListener('pointermove', e=>{
+  if(!drag) return;
+  camYaw -= (e.clientX - lx)*0.005;
+  camPitch = THREE.MathUtils.clamp(camPitch + (e.clientY - ly)*0.004, 0.15, 1.2);
+  lx = e.clientX; ly = e.clientY;
+});
+window.addEventListener('pointerup', ()=>drag=false);
+renderer.domElement.addEventListener('wheel', e=>{
+  camDist = THREE.MathUtils.clamp(camDist + Math.sign(e.deltaY)*1.0, 8, 24);
+}, {passive:true});
+
+const joy = $('#joy'), knob = $('#knob');
+function handleJoy(e){
+  const r = joy.getBoundingClientRect();
+  let dx = (e.clientX - (r.left + r.width/2)) / (r.width*0.4);
+  let dy = (e.clientY - (r.top + r.height/2)) / (r.height*0.4);
+  const len = Math.hypot(dx, dy);
+  if(len > 1){ dx/=len; dy/=len; }
+  joyVec.x = dx; joyVec.y = dy;
+  knob.style.transform = `translate(${dx*32}px, ${dy*32}px)`;
+}
+joy.addEventListener('pointerdown', e=>{ joy.setPointerCapture(e.pointerId); handleJoy(e); });
+joy.addEventListener('pointermove', e=>{ if(e.buttons) handleJoy(e); });
+joy.addEventListener('pointerup', ()=>{ joyVec.x=0; joyVec.y=0; knob.style.transform=''; });
+$('#mJump').onclick = ()=>{ if(player.position.y <= 0.05){ velY = 9.5; sfx(420, 0.08); } };
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+const clock = new THREE.Clock();
+let walkT = 0;
+
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(0.04, clock.getDelta());
+  const elapsed = clock.elapsedTime;
+
+  if($('#modal').classList.contains('hide')){
+    let fwd = (keys.has('KeyW')||keys.has('ArrowUp')?1:0) - (keys.has('KeyS')||keys.has('ArrowDown')?1:0) - joyVec.y;
+    let side = (keys.has('KeyD')||keys.has('ArrowRight')?1:0) - (keys.has('KeyA')||keys.has('ArrowLeft')?1:0) + joyVec.x;
+    const len = Math.hypot(fwd, side);
+    const spd = 8.0;
+
+    if(len > 0.05){
+      fwd/=len; side/=len;
+      const vx = side*Math.cos(camYaw) - fwd*Math.sin(camYaw);
+      const vz = -side*Math.sin(camYaw) - fwd*Math.cos(camYaw);
+      player.position.x = THREE.MathUtils.clamp(player.position.x + (vx*spd + knockX)*dt, -15.5, 15.5);
+      player.position.z = THREE.MathUtils.clamp(player.position.z + (vz*spd + knockZ)*dt, -8.5, 12.5);
+      const rot = Math.atan2(-vx, -vz);
+      player.rotation.y += Math.atan2(Math.sin(rot - player.rotation.y), Math.cos(rot - player.rotation.y))*Math.min(1, dt*12);
+      walkT += dt * spd * 2.2;
+    } else {
+      player.position.x = THREE.MathUtils.clamp(player.position.x + knockX*dt, -15.5, 15.5);
+      player.position.z = THREE.MathUtils.clamp(player.position.z + knockZ*dt, -8.5, 12.5);
+      walkT = 0;
+    }
+    knockX *= Math.pow(0.04, dt);
+    knockZ *= Math.pow(0.04, dt);
+
+    velY -= 24 * dt;
+    player.position.y = Math.max(0, player.position.y + velY*dt);
+    if(player.position.y <= 0) velY = 0;
+
+    const sw = len > 0.05 ? Math.sin(walkT)*0.68 : 0;
+    mage.lArm.rotation.x = sw; mage.rArm.rotation.x = -sw;
+    mage.lLeg.rotation.x = -sw; mage.rLeg.rotation.x = sw;
+    mage.orbitGroup.rotation.y += dt * 3.0;
+
+    // Collect Wild Crystals by Running Through Them
+    for(const c of crystals){
+      c.mesh.rotation.y += dt * 2.5;
+      if(c.cooldown > 0){
+        c.cooldown -= dt;
+        if(c.cooldown <= 0) c.mesh.visible = true;
+        continue;
+      }
+      if(Math.hypot(player.position.x - c.x, player.position.z - c.z) < 1.35 && player.position.y < 1.6){
+        c.cooldown = 3.5; // Respawns after 3.5 seconds!
+        c.mesh.visible = false;
+        if(c.type === 'x') valX = Math.min(9, valX + 1);
+        else valY = Math.min(9, valY + 1);
+        sfx(660, 0.1, 'triangle');
+        refreshAlchemy();
+      }
+    }
+
+    // Patrol Shadow Monsters
+    for(const m of monsters){
+      m.phase += dt * 1.6;
+      const mx = m.baseX + Math.sin(m.phase)*4.5;
+      const mz = m.baseZ + Math.cos(m.phase*0.8)*4.5;
+      m.group.rotation.y = Math.atan2(mx - m.group.position.x, mz - m.group.position.z);
+      m.group.position.set(mx, Math.abs(Math.sin(elapsed*5))*0.25, mz);
+
+      if(Math.hypot(player.position.x - mx, player.position.z - mz) < 1.4 && player.position.y < 1.2){
+        // Hit by shadow monster! Lose 1 crystal & get knocked back
+        if(valX > 0) valX--; else if(valY > 0) valY--;
+        const dir = player.position.clone().sub(m.group.position).normalize();
+        knockX = dir.x * 15; knockZ = dir.z * 15; velY = 6.5;
+        sfx(190, 0.25, 'sawtooth');
+        toast('👾 Tersenggol Monster Bayangan! Lompati dengan SPACE!');
+        refreshAlchemy();
+      }
+    }
+
+    // Deliver Crystals to the Giant Cauldron at (0, 0, -9.5)
+    if(!brewLock && Math.hypot(player.position.x - 0, player.position.z - (-9.5)) < 3.4){
+      const r = recipes[curR];
+      if(valX === r.tx && valY === r.ty){
+        brewLock = true;
+        sfx(940, 0.35, 'triangle');
+        toast(`🎉 RAMUAN SEMPURNA! Solusi SPLDV: (x = ${valX}, y = ${valY})`);
+        setTimeout(()=>{
+          curR++;
+          brewLock = false;
+          if(curR >= recipes.length){
+            $('#modal').classList.remove('hide');
+            $('#modal').innerHTML = `<div class="dialog"><div style="font-size:60px">🏆🧙‍♂️💎</div><h2>GRANDMASTER ALKIMIA SPLDV!</h2><p>Luar biasa! Kamu berhasil memburu seluruh kombinasi kristal <b>Sistem Persamaan Linear Dua Variabel</b> sambil menghindari monster penjaga!</p><button class="cta" onclick="location.reload()">Main Lagi ↻</button></div>`;
+          } else {
+            valX = 0; valY = 0; refreshAlchemy();
+          }
+        }, 1100);
+      } else if(valX > 0 || valY > 0){
+        knockZ = 10;
+        sfx(220, 0.2, 'sawtooth');
+        toast(`⚠️ Takaran (${valX}, ${valY}) belum seimbang! Cek kedua neraca atau tekan [R] untuk ulang.`);
+      }
+    }
+  }
+
+  const focus = new THREE.Vector3(player.position.x*0.65, 1.6, player.position.z*0.65);
+  const camPos = new THREE.Vector3(
+    focus.x + Math.sin(camYaw)*camDist*Math.cos(camPitch),
+    focus.y + camDist*Math.sin(camPitch),
+    focus.z + Math.cos(camYaw)*camDist*Math.cos(camPitch)
+  );
+  camera.position.lerp(camPos, Math.min(1, dt*9));
+  camera.lookAt(focus);
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

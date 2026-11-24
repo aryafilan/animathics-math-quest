@@ -1,3 +1,11 @@
+# Math Quest · v0.5.0
+
+[Play all games](https://aryafilan.github.io/animathics-math-quest/)
+
+28 games in one searchable catalog. Six new interactive prototypes, 18 missions, plus the original Bazar Alkimia. All earlier game paths and sources are retained. New titles: Legendary Blacksmith, Castle Siege, Harvest Kingdom, Potion Master, Pirate Expedition, Math Fortress.
+
+New gameplay code is separated by title under `arcade/`. Shared Three.js utilities in `worlds/engine.js`; level data and pure functions in `arcade/levels.mjs`. Run `node scripts/test-arcade.mjs` for mathematical checks including tower-defense feasibility. New games are prototypes; visual and end-to-end WebGL playtesting still required. Bazar source is imported unchanged (text as supplied).
+
 # Math Quest — v0.4.0
 
 [Mainkan katalog](https://aryafilan.github.io/animathics-math-quest/)
