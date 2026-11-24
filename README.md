@@ -1,3 +1,9 @@
+# Math Quest · v0.7.0
+
+[Aegis of Orbia — The Last Shield](https://aryafilan.github.io/animathics-math-quest/games/aegis-orbia/) · [Demo mode](https://aryafilan.github.io/animathics-math-quest/games/aegis-orbia/?demo=1)
+
+Single-character story adventure with six challenges. Original Slayer model directly retained from the reference template. All previous titles and order preserved. See `games/aegis-orbia/DESIGN.md`. Mathematical tests and syntax checked; actual WebGL playtesting not yet verified.
+
 ## v0.6.1 — Mode presentasi
 
 [Demo Nexus Rift](https://aryafilan.github.io/animathics-math-quest/games/nexus-rift/?demo=1) · pilih mode presentasi atau gunakan tombol PASS / tombol P. PASS melewati bagian aktif (tambang/alkimia, gerbang, satu pulau, satu gelombang boss). Progres demo tidak ditulis ke checkpoint normal. Game lain tidak diubah.

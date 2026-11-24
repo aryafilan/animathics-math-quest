@@ -1,3 +1,8 @@
+## v0.7.0 — Aegis of Orbia
+
+- One new game with the original reference character, independent visual world, six challenges, and presentation pass.
+- 30 games total; all earlier source files retained.
+
 ## v0.6.1 — Presentation pass
 
 - Add demo mode and PASS button / P shortcut to Nexus Rift only.

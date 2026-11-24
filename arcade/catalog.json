@@ -347,5 +347,17 @@
     "symbol": "◆",
     "color": "#b2bcdf",
     "archived": true
+  },
+  {
+    "id": "aegis-orbia",
+    "title": "Aegis of Orbia — The Last Shield",
+    "topic": "Persamaan dan pertidaksamaan lingkaran",
+    "level": "SMP/SMA",
+    "rounds": 6,
+    "genre": "Story survival adventure",
+    "color": "#85e7e8",
+    "symbol": "✦",
+    "description": "Orin memulihkan tiga menara perisai: zona aman, keliling, perpotongan, cincin, dan badai meteor terakhir.",
+    "archived": false
   }
 ]
