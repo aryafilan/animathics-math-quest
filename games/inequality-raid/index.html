@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Inequality Raid | Math Quest</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@700;800;900&display=swap');
+  *{box-sizing:border-box;user-select:none}
+  html,body{margin:0;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:#1f0808;touch-action:none}
+  canvas{display:block}
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+  .topbar{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .card{background:rgba(38,12,12,0.92);backdrop-filter:blur(10px);color:#fff;padding:14px 20px;border-radius:18px;border:2px solid #b388ff;box-shadow:0 10px 30px rgba(0,0,0,0.55);max-width:480px}
+  .badge{display:inline-block;background:linear-gradient(90deg,#ff1744,#ff9100);color:#fff;font-family:'Fredoka',sans-serif;font-size:11px;padding:3px 10px;border-radius:99px}
+  .card h1{font-family:'Fredoka',sans-serif;margin:5px 0 3px;font-size:21px;color:#ffd54f}
+  .card p{margin:0;font-size:13px;color:#ffcdd2;line-height:1.4}
+  .circle-eq{margin-top:8px;background:#140404;border:2px solid #00e5ff;padding:9px 14px;border-radius:12px;font-family:monospace;font-size:16px;color:#00e5ff;font-weight:900;text-align:center}
+  .stats{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .pill{background:rgba(38,12,12,0.92);color:#fff;padding:10px 16px;border-radius:99px;border:2px solid #b388ff;font-weight:900;font-size:14px}
+  .pill b{color:#ffd54f}
+  .coords-live{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(20,6,6,0.94);color:#fff;padding:10px 24px;border-radius:99px;border:2px solid #00e5ff;font-weight:900;font-size:15px}
+  .coords-live b{color:#00e676}
+  .controls-tip{position:absolute;bottom:16px;left:16px;background:rgba(38,12,12,0.88);color:#ffcdd2;padding:10px 15px;border-radius:14px;font-size:12px;font-weight:800}
+  .controls-tip kbd{background:#ffffff28;color:#fff;padding:2px 6px;border-radius:5px}
+  #toast{position:fixed;top:100px;left:50%;transform:translateX(-50%);background:#1a0505;color:#ffd54f;border:2px solid #ffd54f;padding:11px 24px;border-radius:99px;font-weight:900;font-size:15px;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+  #toast.show{opacity:1}
+  #strikeFlash{position:fixed;inset:0;background:rgba(224,250,255,0);pointer-events:none;z-index:45;transition:background .08s ease}
+  #strikeFlash.flash{background:rgba(224,250,255,.88);animation:lightningFlash .68s steps(2,end) 1}
+  @keyframes lightningFlash{0%,100%{opacity:0}12%,28%,50%{opacity:1}18%,40%,70%{opacity:.15}}
+  #modal{position:fixed;inset:0;background:rgba(16,4,4,0.88);backdrop-filter:blur(8px);display:grid;place-items:center;z-index:50;padding:20px}
+  #modal.hide{display:none!important}
+  .dialog{background:#2b0c0c;border:4px solid #b388ff;color:#fff;max-width:490px;width:100%;border-radius:28px;padding:30px;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,0.75)}
+  .dialog h2{font-family:'Fredoka',sans-serif;font-size:30px;color:#ffd54f;margin:8px 0}
+  .dialog p{color:#ffcdd2;font-size:15px;line-height:1.6}
+  .cta{background:linear-gradient(135deg,#ff1744,#ff9100);color:#fff;font:inherit;font-weight:900;font-size:17px;border:0;border-radius:14px;padding:15px 22px;width:100%;cursor:pointer;margin-top:14px;box-shadow:0 6px 0 #b71c1c}
+  #mobile{display:none;position:fixed;inset:0;pointer-events:none;z-index:20}
+  .joy{position:absolute;bottom:28px;left:24px;width:125px;height:125px;border-radius:50%;background:rgba(255,255,255,0.18);border:3px solid rgba(255,255,255,0.45);pointer-events:auto;touch-action:none}
+  .knob{position:absolute;top:38px;left:38px;width:48px;height:48px;border-radius:50%;background:#fff}
+  .m-btns{position:absolute;bottom:32px;right:24px;display:flex;gap:12px;pointer-events:auto}
+  .m-btns button{width:68px;height:68px;border-radius:50%;background:#ffd54f;color:#111;font-size:18px;font-weight:900;border:3px solid #fff}
+  @media(hover:none),(pointer:coarse){#mobile{display:block}.controls-tip{display:none}.coords-live{bottom:160px}}
+@media(max-width:700px){.card{padding:8px 10px;max-width:70vw}.card h1{font-size:15px}.card p,.circle-eq{font-size:11px}.pill{font-size:11px;padding:5px 8px}.coords-live{font-size:12px;max-width:94vw;white-space:nowrap;padding:8px 12px}} @media(prefers-reduced-motion:reduce){#strikeFlash.flash{animation:none;background:transparent}}
+</style>
+</head>
+<body>
+<div id="hud">
+  <div class="topbar">
+    <div class="card">
+      <span class="badge">BOSS RAID • PERTIDAKSAMAAN LINEAR</span>
+      <h1 id="bTitle">Inequality Raid</h1>
+      <p>Berdiri di ubin yang memenuhi pertidaksamaan linear. Pilih ubin aman sebelum waktu habis. Koordinat selalu (X, Y). Area benar baru terlihat ketika serangan datang.</p>
+      <div class="circle-eq" id="bEq">(x − 2)² + (y − 3)² ≤ 4</div>
+    </div>
+    <div class="stats">
+      <div class="pill">🐉 HP NAGA BOSS: <b id="stBoss">100%</b></div>
+      <div class="pill">❤️ NYAWA: <b id="stLives">❤️❤️</b></div>
+      <div class="pill">☄️ METEOR JATUH: <b id="stTimer">6.0 dtk</b></div>
+    </div>
+  </div>
+  <div class="coords-live" id="posHud">Posisi Kamu: <b>(0, 0)</b> &nbsp;|&nbsp; <span style="color:#ffd54f">TENTUKAN TITIK AMANMU!</span></div>
+  <div class="controls-tip"><kbd>WASD</kbd> Cari ubin aman &nbsp;<kbd>SPACE</kbd> Lompat &nbsp;<kbd>MOUSE</kbd> Kamera</div>
+</div>
+
+<div id="toast"></div>
+<div id="strikeFlash"></div>
+
+<div id="modal">
+  <div class="dialog">
+    <div style="font-size:58px">🐉☄️⚡</div>
+    <h2>INEQUALITY RAID</h2>
+    <p>Mecha Dragon menyerang! Berdiri di ubin yang memenuhi pertidaksamaan linear.<br><br>Berdiri di tengah ubin yang memenuhi syarat. Jika benar, energi dipantulkan ke naga. Kamu punya dua nyawa.</p>
+    <button class="cta" id="startBtn">Lawan Boss Naga Sekarang ▶</button>
+  </div>
+</div>
+
+<div id="mobile">
+  <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
+  <div class="m-btns">
+    <button id="mJump">⤒</button>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+
+const $ = s => document.querySelector(s);
+const introSeenKey = 'lingkaran-meteor-intro-sudah-dilihat';
+function mulaiBermain(){
+  try{ sessionStorage.setItem(introSeenKey, '1'); }catch(e){}
+  $('#modal').classList.add('hide');
+}
+$('#startBtn').addEventListener('click', mulaiBermain);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x170b2b);
+scene.fog = new THREE.FogExp2(0x170b2b, 0.01);
+
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 240);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+renderer.shadowMap.enabled = true;
+document.body.prepend(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffccbc, 0x1a0505, 1.5));
+const sun = new THREE.DirectionalLight(0xffab40, 2.0);
+sun.position.set(20, 45, 22);
+sun.castShadow = true;
+scene.add(sun);
+
+function drawRoundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  if(typeof ctx.roundRect === 'function') ctx.roundRect(x, y, w, h, r);
+  else ctx.rect(x, y, w, h);
+  ctx.closePath();
+}
+
+function createVolcanoTex(hex){
+  const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = hex; ctx.fillRect(0,0,64,64);
+  ctx.strokeStyle = 'rgba(255,120,80,0.22)'; ctx.lineWidth = 3; ctx.strokeRect(2,2,60,60);
+  return new THREE.CanvasTexture(c);
+}
+
+function sfx(freq=520, dur=0.1, type='sine'){
+  try{
+    const ac = sfx.ac || (sfx.ac = new (window.AudioContext||window.webkitAudioContext)());
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.08, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur);
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime+dur);
+  }catch(e){}
+}
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.tm); toast.tm = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+function makeCoordLabel(txt, x, y, z, fg='#ffab91'){
+  const c = document.createElement('canvas'); c.width = 160; c.height = 80;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(20,6,6,0.85)'; drawRoundRect(ctx, 4, 4, 152, 72, 18); ctx.fill();
+  ctx.font = '900 34px Nunito, sans-serif'; ctx.fillStyle = fg;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(txt, 80, 42);
+  const tex = new THREE.CanvasTexture(c);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false}));
+  sp.position.set(x, y, z); sp.scale.set(1.3, 0.65, 1);
+  scene.add(sp);
+}
+
+const STEP = 2.4;
+const floor = new THREE.Mesh(new THREE.BoxGeometry(28, 0.8, 28), new THREE.MeshStandardMaterial({color:0x261444, roughness:0.8}));
+floor.position.y = -0.45; floor.receiveShadow = true; scene.add(floor);
+
+const axisMat = new THREE.MeshBasicMaterial({color:0xb388ff});
+scene.add(new THREE.Mesh(new THREE.BoxGeometry(23, 0.1, 0.18), axisMat));
+scene.add(new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.1, 23), axisMat));
+
+const texTile = createVolcanoTex('#3b1717');
+const texAxis = createVolcanoTex('#5c2323');
+
+for(let gx=-4; gx<=4; gx++){
+  for(let gy=-4; gy<=4; gy++){
+    const wx = gx*STEP, wz = -gy*STEP;
+    const m = new THREE.Mesh(new THREE.BoxGeometry(2.15, 0.2, 2.15), new THREE.MeshStandardMaterial({map:(gx===0||gy===0)?texAxis:texTile}));
+    m.position.set(wx, 0.1, wz); m.receiveShadow = true; scene.add(m);
+    if(gx===0 && gy!==0) makeCoordLabel(`${gy}`, wx+0.55, 0.45, wz, '#ffd54f');
+    if(gy===0 && gx!==0) makeCoordLabel(`${gx}`, wx, 0.45, wz+0.55, '#ffd54f');
+  }
+}
+// Penanda besar agar urutan koordinat tidak tertukar: titik selalu (X, Y).
+makeCoordLabel('X', STEP*4.28, 0.85, 0.25, '#00e5ff');
+makeCoordLabel('Y', 0.25, 0.85, -STEP*4.28, '#00e5ff');
+
+// Giant Mecha Dragon Boss at Z = -16.5
+const boss = new THREE.Group(); boss.position.set(0, 4.5, -16.5); scene.add(boss);
+const bMat = new THREE.MeshStandardMaterial({color:0x5b0712, metalness:0.72, roughness:0.30});
+const plateMat = new THREE.MeshStandardMaterial({color:0x25030a, metalness:0.86, roughness:0.25});
+const lavaMat = new THREE.MeshStandardMaterial({color:0xff3d00, emissive:0xb51b00, emissiveIntensity:1.25});
+const glowMat = new THREE.MeshStandardMaterial({color:0xffe26a, emissive:0xff4d00, emissiveIntensity:1.1});
+const hornMat = new THREE.MeshStandardMaterial({color:0x111217, metalness:0.9, roughness:0.2});
+const toothMat = new THREE.MeshStandardMaterial({color:0xfff3d1, metalness:0.2, roughness:0.45});
+const bossWings = [], bossArms = [], bossTail = [];
+function addBoss(geo, mat, x=0,y=0,z=0, parent=boss){
+  const m = new THREE.Mesh(geo,mat); m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; parent.add(m); return m;
+}
+
+// Tubuh naga mekanis: dada berlapis, inti lava, duri punggung, ekor dan cakar.
+const bTorso = addBoss(new THREE.DodecahedronGeometry(3.25,0), bMat, 0,.45,0); bTorso.scale.set(1,1.28,.72);
+for(let y=-.55; y<=1.2; y+=.58){
+  const plate = addBoss(new THREE.BoxGeometry(4.25,.32,.26), plateMat, 0,y,2.28); plate.rotation.x=-.12;
+}
+const bCore = addBoss(new THREE.OctahedronGeometry(1.05,0), glowMat, 0,.4,2.5);
+const coreRing = addBoss(new THREE.TorusGeometry(1.36,.13,8,24), lavaMat, 0,.4,2.37); coreRing.rotation.x=Math.PI/2;
+for(let i=0;i<7;i++){
+  const spike = addBoss(new THREE.ConeGeometry(.26,.95,5), hornMat, 0,1.4+i*.55,-1.95-i*.07);
+  spike.rotation.x=-.12;
+}
+
+const dragonHead = new THREE.Group(); dragonHead.position.set(0,4.55,.85); boss.add(dragonHead);
+function addHead(geo,mat,x=0,y=0,z=0){ const m=new THREE.Mesh(geo,mat); m.position.set(x,y,z); m.castShadow=true; dragonHead.add(m); return m; }
+addHead(new THREE.DodecahedronGeometry(1.72,0), bMat,0,.18,0); 
+addHead(new THREE.BoxGeometry(2.48,.82,1.55), bMat,0,-.28,1.22);
+const bossJaw = new THREE.Group(); bossJaw.position.set(0,-.72,1.03); dragonHead.add(bossJaw);
+const jaw = new THREE.Mesh(new THREE.BoxGeometry(2.30,.50,1.42), plateMat); jaw.castShadow=true; bossJaw.add(jaw);
+for(const sx of [-1,1]){
+  const brow = addHead(new THREE.BoxGeometry(.88,.24,.45), hornMat,sx*.67,.55,1.20); brow.rotation.z=sx*.22;
+  const eye = addHead(new THREE.SphereGeometry(.23,10,8), lavaMat,sx*.63,.28,1.45);
+  const horn = addHead(new THREE.ConeGeometry(.32,1.55,6), hornMat,sx*1.05,1.12,-.05); horn.rotation.z=sx*.48;
+  const cheek = addHead(new THREE.ConeGeometry(.38,.85,5), plateMat,sx*1.43,-.10,.72); cheek.rotation.z=sx*Math.PI/2;
+  for(let i=0;i<3;i++){
+    const tooth = new THREE.Mesh(new THREE.ConeGeometry(.10,.46,5), toothMat);
+    tooth.position.set(sx*(.34+i*.47),-.03,.65); tooth.rotation.x=Math.PI; bossJaw.add(tooth);
+  }
+}
+for(const sx of [-1,1]){
+  const arm = new THREE.Group(); arm.position.set(sx*2.82,.45,.65); boss.add(arm); bossArms.push(arm);
+  const upper = new THREE.Mesh(new THREE.CylinderGeometry(.46,.62,2.25,8), bMat); upper.rotation.z=sx*.68; upper.castShadow=true; arm.add(upper);
+  const fore = new THREE.Mesh(new THREE.CylinderGeometry(.35,.47,1.80,8), plateMat); fore.position.set(sx*.86,-1.08,.3); fore.rotation.z=sx*.76; fore.castShadow=true; arm.add(fore);
+  for(let i=0;i<3;i++){
+    const claw = new THREE.Mesh(new THREE.ConeGeometry(.12,.82,5), toothMat); claw.position.set(sx*(1.48+i*.20),-1.75,.42+i*.20); claw.rotation.z=sx*.55; arm.add(claw);
+  }
+  const wing = new THREE.Group(); wing.position.set(sx*2.25,1.9,-.65); boss.add(wing); bossWings.push({wing,sx});
+  const bone = new THREE.Mesh(new THREE.CylinderGeometry(.18,.32,6.2,8), hornMat); bone.rotation.z=sx*.94; bone.position.set(sx*2.1,.4,0); wing.add(bone);
+  const membrane = new THREE.Mesh(new THREE.ConeGeometry(2.45,5.45,3), new THREE.MeshStandardMaterial({color:0x7a0718, emissive:0x2a0005, transparent:true, opacity:.86, side:THREE.DoubleSide}));
+  membrane.position.set(sx*3.15,.08,-.12); membrane.rotation.z=sx*(Math.PI/2); wing.add(membrane);
+  for(let i=0;i<3;i++){
+    const wingTip = new THREE.Mesh(new THREE.ConeGeometry(.22,.86,5), hornMat); wingTip.position.set(sx*(4.35-i*.78),1.3-i*.78,-.08); wingTip.rotation.z=sx*Math.PI/2; wing.add(wingTip);
+  }
+}
+for(let i=0;i<5;i++){
+  const seg = addBoss(new THREE.DodecahedronGeometry(.72-i*.08,0), bMat,0,-.05-i*.18,-2.15-i*1.0);
+  seg.rotation.x=.36; bossTail.push(seg);
+}
+const tailTip = addBoss(new THREE.ConeGeometry(.52,1.65,6), hornMat,0,-.95,-7.0); tailTip.rotation.x=Math.PI/2;
+
+// Kubah dan diamond/tombak sengaja disembunyikan sampai meteor jatuh.
+const shieldDome = new THREE.Mesh(
+  new THREE.SphereGeometry(1, 24, 16, 0, Math.PI*2, 0, Math.PI/2),
+  new THREE.MeshBasicMaterial({color:0x00e5ff, transparent:true, opacity:0.28, wireframe:false, side:THREE.DoubleSide})
+);
+scene.add(shieldDome);
+
+const spear = new THREE.Mesh(new THREE.OctahedronGeometry(0.75, 0), new THREE.MeshStandardMaterial({color:0x00e5ff, emissive:0x00b0ff, emissiveIntensity:0.95}));
+scene.add(spear);
+
+const lightning = new THREE.Group();
+lightning.visible = false;
+scene.add(lightning);
+const shieldBlast = new THREE.Group();
+shieldBlast.visible = false;
+scene.add(shieldBlast);
+function summonLightning(wx, wz){
+  lightning.clear();
+  for(let i=0; i<7; i++){
+    const bolt = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.045, 0.13, 2.8 + Math.random()*1.2, 6),
+      new THREE.MeshBasicMaterial({color: i%2 ? 0xffffff : 0x66eaff, transparent:true, opacity:0.95})
+    );
+    bolt.position.set(wx + (Math.random()-0.5)*0.75, 8.5 + i*1.45, wz + (Math.random()-0.5)*0.75);
+    bolt.rotation.z = (Math.random()-0.5)*0.42;
+    bolt.rotation.x = (Math.random()-0.5)*0.26;
+    lightning.add(bolt);
+  }
+  lightning.visible = true;
+  $('#strikeFlash').classList.remove('flash');
+  void $('#strikeFlash').offsetWidth;
+  $('#strikeFlash').classList.add('flash');
+  setTimeout(()=>{ lightning.visible = false; $('#strikeFlash').classList.remove('flash'); }, 720);
+}
+function triggerShieldExplosion(wx, wz, radius){
+  shieldBlast.clear();
+  shieldBlast.position.set(wx, 0.25, wz);
+  const ringMat = new THREE.MeshBasicMaterial({color:0x5df5ff, transparent:true, opacity:0.95, side:THREE.DoubleSide});
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(.45,.10,10,32), ringMat);
+  ring.rotation.x = Math.PI/2; shieldBlast.add(ring);
+  for(let i=0; i<18; i++){
+    const a = i/18*Math.PI*2, h = .25 + Math.random()*2.4;
+    const shard = new THREE.Mesh(
+      new THREE.OctahedronGeometry(.10 + Math.random()*.15, 0),
+      new THREE.MeshBasicMaterial({color:i%2?0xffffff:0x00dfff, transparent:true, opacity:1})
+    );
+    shard.position.set(Math.cos(a)*.42, h, Math.sin(a)*.42);
+    shard.userData = {angle:a, speed:1.6+Math.random()*1.7, rise:.7+Math.random()*1.5};
+    shieldBlast.add(shard);
+  }
+  shieldBlast.userData = {started: clock.elapsedTime, radius};
+  shieldBlast.visible = true;
+}
+
+const meteors = new THREE.Group(); scene.add(meteors);
+const reboundLightning = new THREE.Group();
+reboundLightning.visible = false;
+scene.add(reboundLightning);
+function pantulkanPetirKeNaga(wx, wz){
+  reboundLightning.clear();
+  const points = [];
+  const start = new THREE.Vector3(wx, 2.7, wz);
+  const end = new THREE.Vector3(boss.position.x, boss.position.y + 1.0, boss.position.z + 1.8);
+  for(let i=0; i<=10; i++){
+    const t = i/10;
+    const p = start.clone().lerp(end, t);
+    if(i>0 && i<10){ p.x += (Math.random()-.5)*1.1; p.y += (Math.random()-.5)*1.0; p.z += (Math.random()-.5)*1.1; }
+    points.push(p);
+  }
+  const bolt = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({color:0xbffcff, transparent:true, opacity:1}));
+  reboundLightning.add(bolt);
+  reboundLightning.visible = true;
+  glowMat.emissiveIntensity = 4;
+  boss.scale.set(1.12, .88, 1.12);
+  setTimeout(()=>{ reboundLightning.visible=false; glowMat.emissiveIntensity=.9; boss.scale.set(1,1,1); }, 650);
+}
+
+// Avatar Roblox bergaya Dragon Slayer: armor berlapis, helm, jetpack, dan bilah energi.
+function createSlayer(){
+  const root = new THREE.Group();
+  const armor = new THREE.MeshStandardMaterial({color:0x1a2c3b, metalness:0.78, roughness:0.28});
+  const plate = new THREE.MeshStandardMaterial({color:0x314d62, metalness:0.7, roughness:0.32});
+  const dark  = new THREE.MeshStandardMaterial({color:0x0a1119, metalness:0.55, roughness:0.38});
+  const cyan  = new THREE.MeshStandardMaterial({color:0x00dfff, emissive:0x00b8ff, emissiveIntensity:1.5});
+  const gold  = new THREE.MeshStandardMaterial({color:0xffbc42, metalness:0.7, roughness:0.24});
+  const skin  = new THREE.MeshStandardMaterial({color:0xd89768, roughness:0.72});
+  const mesh = (geo, mat, x=0,y=0,z=0) => { const m = new THREE.Mesh(geo,mat); m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; root.add(m); return m; };
+
+  // Torso berlapis dan inti energi dada.
+  mesh(new THREE.BoxGeometry(1.22,1.32,.66), armor, 0,1.62,0);
+  mesh(new THREE.BoxGeometry(1.04,.98,.16), plate, 0,1.72,-.39);
+  mesh(new THREE.BoxGeometry(1.31,.16,.76), gold, 0,1.22,0);
+  const core = mesh(new THREE.OctahedronGeometry(.25,0), cyan, 0,1.78,-.52);
+  mesh(new THREE.BoxGeometry(.68,.08,.06), cyan, 0,2.13,-.48);
+
+  // Kepala kotak khas Roblox dengan helm tempur dan visor menyala.
+  mesh(new THREE.BoxGeometry(.82,.78,.72), skin, 0,2.72,0);
+  mesh(new THREE.BoxGeometry(.94,.30,.82), armor, 0,3.08,0);
+  mesh(new THREE.BoxGeometry(.95,.25,.18), dark, 0,2.77,-.42);
+  mesh(new THREE.BoxGeometry(.76,.12,.07), cyan, 0,2.77,-.53);
+  mesh(new THREE.BoxGeometry(.13,.38,.64), gold, 0,3.02,-.46);
+  for(const s of [-1,1]){
+    const fin = mesh(new THREE.ConeGeometry(.16,.55,4), cyan, s*.48,3.25,.03);
+    fin.rotation.z = s*.55;
+  }
+
+  function arm(x, flip){
+    const g = new THREE.Group(); g.position.set(x,2.2,0); root.add(g);
+    const add = (geo,mat,px,py,pz) => { const m=new THREE.Mesh(geo,mat); m.position.set(px,py,pz); m.castShadow=true; g.add(m); return m; };
+    add(new THREE.SphereGeometry(.39,12,8), plate,0,-.05,0);
+    add(new THREE.BoxGeometry(.48,.58,.5), armor,0,-.43,0);
+    add(new THREE.BoxGeometry(.54,.12,.56), gold,0,-.68,0);
+    add(new THREE.BoxGeometry(.44,.48,.46), plate,0,-.95,0);
+    add(new THREE.BoxGeometry(.48,.28,.48), dark,0,-1.30,-.02);
+    const stripe = add(new THREE.BoxGeometry(.12,.40,.05), cyan,flip*.17,-.98,-.25);
+    return g;
+  }
+  const lArm = arm(-.88,-1), rArm = arm(.88,1);
+
+  function leg(x){
+    const g = new THREE.Group(); g.position.set(x,1.02,0); root.add(g);
+    const add = (geo,mat,px,py,pz) => { const m=new THREE.Mesh(geo,mat); m.position.set(px,py,pz); m.castShadow=true; g.add(m); return m; };
+    add(new THREE.BoxGeometry(.52,.58,.54), armor,0,-.30,0);
+    add(new THREE.BoxGeometry(.60,.12,.58), gold,0,-.58,0);
+    add(new THREE.BoxGeometry(.48,.58,.50), plate,0,-.93,.03);
+    add(new THREE.BoxGeometry(.58,.28,.78), dark,0,-1.34,-.12);
+    add(new THREE.BoxGeometry(.12,.36,.06), cyan,0,-.93,-.27);
+    return g;
+  }
+  const lLeg = leg(-.31), rLeg = leg(.31);
+
+  // Jetpack, pendorong, dan pedang energi di punggung.
+  const pack = new THREE.Group(); pack.position.set(0,1.78,.46); root.add(pack);
+  for(const s of [-1,1]){
+    const jet = new THREE.Mesh(new THREE.CylinderGeometry(.18,.24,.70,10), plate); jet.position.set(s*.34,0,0); jet.rotation.x=Math.PI/2; jet.castShadow=true; pack.add(jet);
+    const flame = new THREE.Mesh(new THREE.ConeGeometry(.17,.52,8), cyan); flame.position.set(s*.34,0,.48); flame.rotation.x=Math.PI/2; pack.add(flame);
+  }
+  const blade = new THREE.Mesh(new THREE.BoxGeometry(.13,1.42,.18), cyan); blade.position.set(.52,.38,.22); blade.rotation.z=-.48; pack.add(blade);
+  const hilt = new THREE.Mesh(new THREE.BoxGeometry(.48,.13,.18), gold); hilt.position.set(.18,-.18,.22); hilt.rotation.z=-.48; pack.add(hilt);
+  return {root, lArm, rArm, lLeg, rLeg, core, pack};
+}
+const slayer = createSlayer();
+const player = slayer.root;
+scene.add(player);
+
+const phases = [{"eq":"x + y ≥ 3","a":1,"b":2,"r":1,"target":[[-1,4],[0,3],[0,4],[1,2],[1,3],[1,4],[2,1],[2,2],[2,3],[2,4],[3,0],[3,1],[3,2],[3,3],[3,4],[4,-1],[4,0],[4,1],[4,2],[4,3],[4,4]]},{"eq":"2x − y ≤ −2","a":-1,"b":0,"r":1,"target":[[-4,-4],[-4,-3],[-4,-2],[-4,-1],[-4,0],[-4,1],[-4,2],[-4,3],[-4,4],[-3,-4],[-3,-3],[-3,-2],[-3,-1],[-3,0],[-3,1],[-3,2],[-3,3],[-3,4],[-2,-2],[-2,-1],[-2,0],[-2,1],[-2,2],[-2,3],[-2,4],[-1,0],[-1,1],[-1,2],[-1,3],[-1,4],[0,2],[0,3],[0,4],[1,4]]},{"eq":"y > x + 1","a":-1,"b":1,"r":1,"target":[[-4,-2],[-4,-1],[-4,0],[-4,1],[-4,2],[-4,3],[-4,4],[-3,-1],[-3,0],[-3,1],[-3,2],[-3,3],[-3,4],[-2,0],[-2,1],[-2,2],[-2,3],[-2,4],[-1,1],[-1,2],[-1,3],[-1,4],[0,2],[0,3],[0,4],[1,3],[1,4],[2,4]]},{"eq":"x − 2y ≥ 4","a":0,"b":-2,"r":1,"target":[[-4,-4],[-3,-4],[-2,-4],[-2,-3],[-1,-4],[-1,-3],[0,-4],[0,-3],[0,-2],[1,-4],[1,-3],[1,-2],[2,-4],[2,-3],[2,-2],[2,-1],[3,-4],[3,-3],[3,-2],[3,-1],[4,-4],[4,-3],[4,-2],[4,-1],[4,0]]},{"eq":"3x + y < −3","a":-1,"b":-1,"r":1,"target":[[-4,-4],[-4,-3],[-4,-2],[-4,-1],[-4,0],[-4,1],[-4,2],[-4,3],[-4,4],[-3,-4],[-3,-3],[-3,-2],[-3,-1],[-3,0],[-3,1],[-3,2],[-3,3],[-3,4],[-2,-4],[-2,-3],[-2,-2],[-2,-1],[-2,0],[-2,1],[-2,2],[-1,-4],[-1,-3],[-1,-2],[-1,-1],[0,-4]]}];
+const safeTiles = new THREE.Group(); scene.add(safeTiles);
+let strikeResult=false;
+
+let curP = 0, bossHP = 100, lives = 2, timer = 12, spearCollected = false, strikeActive = false, gameOver = false;
+
+function updateStats(){
+  $('#stBoss').textContent = `${bossHP}%`;
+  $('#stLives').textContent = '❤️'.repeat(lives) + '🖤'.repeat(2-lives);
+}
+function tampilkanKemenangan(){
+  gameOver = true;
+  $('#modal').classList.remove('hide');
+  $('#modal').innerHTML = `<div class="dialog"><div style="font-size:60px">🏆🐉⚡</div><h2>NAGA MECHA DIKALAHKAN!</h2><p>Setiap jawaban yang benar memantulkan petir dari kubah ke naga. Kamu berhasil menghabiskan HP-nya!</p><button class="cta" onclick="location.reload()">Main Lagi ↻</button></div>`;
+}
+
+function loadPhase(){
+  const p = phases[curP];
+  $('#bEq').textContent = p.eq;
+  updateStats();
+  timer = 12;
+  spearCollected = false;
+  strikeActive = false;
+
+  const wx = p.a * STEP, wz = -p.b * STEP;
+  shieldDome.position.set(wx, 0.1, wz);
+  shieldDome.scale.set(p.r * STEP, 3.2, p.r * STEP);
+  spear.position.set(wx, 1.5, wz);
+  shieldDome.visible = false;
+  spear.visible = false;
+  safeTiles.clear(); safeTiles.visible=false;
+  for(const [x,y] of p.target){ const m=new THREE.Mesh(new THREE.BoxGeometry(2.13,.08,2.13),new THREE.MeshBasicMaterial({color:0x00e5ff,transparent:true,opacity:.64})); m.position.set(x*STEP,.25,-y*STEP); safeTiles.add(m); }
+}
+loadPhase();
+
+const keys = new Set(), joyVec = {x:0, y:0};
+let camYaw = 0, camPitch = 0.58, camDist = 16.5, velY = 0;
+
+window.addEventListener('keydown', e=>{
+  keys.add(e.code);
+  if(e.code==='Space' && player.position.y <= 0.25) { velY = 9.0; sfx(420, 0.08); }
+});
+window.addEventListener('keyup', e=>keys.delete(e.code)); window.addEventListener('blur',()=>{keys.clear(); joyVec.x=joyVec.y=0;});
+
+let drag = false, lx = 0, ly = 0;
+renderer.domElement.addEventListener('pointerdown', e=>{
+  if(e.clientX < 180 && matchMedia('(hover:none),(pointer:coarse)').matches) return;
+  drag = true; lx = e.clientX; ly = e.clientY;
+});
+window.addEventListener('pointermove', e=>{
+  if(!drag) return;
+  camYaw -= (e.clientX - lx)*0.005;
+  camPitch = THREE.MathUtils.clamp(camPitch + (e.clientY - ly)*0.004, 0.2, 1.25);
+  lx = e.clientX; ly = e.clientY;
+});
+window.addEventListener('pointerup', ()=>drag=false);
+
+const joy = $('#joy'), knob = $('#knob');
+function handleJoy(e){
+  const r = joy.getBoundingClientRect();
+  let dx = (e.clientX - (r.left + r.width/2)) / (r.width*0.4);
+  let dy = (e.clientY - (r.top + r.height/2)) / (r.height*0.4);
+  const len = Math.hypot(dx, dy);
+  if(len > 1){ dx/=len; dy/=len; }
+  joyVec.x = dx; joyVec.y = dy;
+  knob.style.transform = `translate(${dx*32}px, ${dy*32}px)`;
+}
+joy.addEventListener('pointerdown', e=>{ joy.setPointerCapture(e.pointerId); handleJoy(e); });
+joy.addEventListener('pointermove', e=>{ if(e.buttons) handleJoy(e); });
+for(const type of ['pointerup','pointercancel','lostpointercapture']) joy.addEventListener(type, ()=>{ joyVec.x=0; joyVec.y=0; knob.style.transform=''; });
+$('#mJump').onclick = ()=>{ if(player.position.y <= 0.25){ velY = 9.0; sfx(420, 0.08); } };
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+const clock = new THREE.Clock();
+let walkT = 0;
+
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(0.04, clock.getDelta());
+  const elapsed = clock.elapsedTime;
+
+  if($('#modal').classList.contains('hide') && !gameOver){
+    let fwd = (keys.has('KeyW')||keys.has('ArrowUp')?1:0) - (keys.has('KeyS')||keys.has('ArrowDown')?1:0) - joyVec.y;
+    let side = (keys.has('KeyD')||keys.has('ArrowRight')?1:0) - (keys.has('KeyA')||keys.has('ArrowLeft')?1:0) + joyVec.x;
+    const len = Math.hypot(fwd, side);
+    const spd = 7.6;
+
+    if(len > 0.05){
+      fwd/=len; side/=len;
+      const vx = side*Math.cos(camYaw) - fwd*Math.sin(camYaw);
+      const vz = -side*Math.sin(camYaw) - fwd*Math.cos(camYaw);
+      player.position.x = THREE.MathUtils.clamp(player.position.x + vx*spd*dt, -4.3*STEP, 4.3*STEP);
+      player.position.z = THREE.MathUtils.clamp(player.position.z + vz*spd*dt, -4.3*STEP, 4.3*STEP);
+      const rot = Math.atan2(-vx, -vz);
+      player.rotation.y += Math.atan2(Math.sin(rot - player.rotation.y), Math.cos(rot - player.rotation.y))*Math.min(1, dt*12);
+      walkT += dt * spd * 2.2;
+    } else {
+      walkT = 0;
+    }
+
+    velY -= 22 * dt;
+    player.position.y = Math.max(0.2, player.position.y + velY*dt);
+    if(player.position.y <= 0.2) velY = 0;
+
+    const sw = len > 0.05 ? Math.sin(walkT)*0.7 : 0;
+    slayer.lArm.rotation.x = sw; slayer.rArm.rotation.x = -sw;
+    slayer.lLeg.rotation.x = -sw; slayer.rLeg.rotation.x = sw;
+    slayer.core.rotation.y += dt * 4.5;
+    slayer.core.rotation.x += dt * 2.2;
+    slayer.pack.position.y = 1.78 + Math.sin(elapsed*4.2)*0.025;
+
+    const p = phases[curP];
+    const gx = player.position.x / STEP;
+    const gy = -player.position.z / STEP;
+    const distSq = (gx - p.a)**2 + (gy - p.b)**2;
+    const ix=Math.round(gx), iy=Math.round(gy);
+    const insideShield = Math.abs(gx-ix)<=0.45 && Math.abs(gy-iy)<=0.45 && p.target.some(([x,y])=>x===ix && y===iy);
+
+    const status = strikeActive
+      ? (strikeResult ? '<span style="color:#00e676">🛡️ UBIN AMAN!</span>' : '<span style="color:#b388ff">☠️ TERKENA PETIR!</span>')
+      : '<span style="color:#ffd54f">TENTUKAN TITIK AMANMU!</span>';
+    $('#posHud').innerHTML = `Posisi Kamu: <b>(${Math.round(gx)}, ${Math.round(gy)})</b> &nbsp;|&nbsp; ${status}`;
+
+    // Saat waktu habis: petir membuka kubah di jawaban yang benar, tanpa petunjuk sebelumnya.
+    if(!strikeActive){
+      timer -= dt;
+      $('#stTimer').textContent = `${Math.max(0, timer).toFixed(1)} dtk`;
+      if(timer <= 0){
+        strikeActive = true; strikeResult=insideShield;
+        const wx = (insideShield?ix:p.a) * STEP, wz = -(insideShield?iy:p.b) * STEP;
+        safeTiles.visible=true;
+        shieldDome.position.set(wx,.1,wz); shieldDome.scale.set(1.1,3.2,1.1); shieldDome.visible=insideShield;
+        summonLightning(wx, wz);
+        sfx(1180, 0.42, 'sawtooth');
+        $('#stTimer').textContent = 'PETIR!';
+        if(insideShield){
+          triggerShieldExplosion(wx, wz, p.r * STEP);
+          pantulkanPetirKeNaga(wx, wz);
+          bossHP = Math.max(0, bossHP - 20);
+          updateStats();
+          sfx(780, 0.38, 'square');
+          toast('⚡ PETIR DIPANTULKAN KE NAGA! HP boss berkurang 20%.');
+          setTimeout(()=>{
+            if(bossHP <= 0) tampilkanKemenangan();
+            else { curP = (curP + 1) % phases.length; loadPhase(); }
+          }, 1150);
+        } else {
+          lives = Math.max(0, lives - 1);
+          updateStats();
+          velY = 7.5;
+          if(lives > 0){
+            toast(`⚠️ SALAH POSISI! Kamu masih punya ${lives} nyawa. Coba soal yang sama lagi.`);
+            setTimeout(()=>{
+              player.position.set(0, 0.2, 0); velY = 0;
+              loadPhase();
+            }, 1100);
+          } else {
+            gameOver = true;
+            setTimeout(()=>{
+              $('#modal').classList.remove('hide');
+              $('#modal').innerHTML = `<div class="dialog"><div style="font-size:64px">⚡🔥💀</div><h2>NYAWA HABIS!</h2><p>Kamu telah kehilangan dua nyawa. Periksa lagi syarat dan gunakan format titik <b>(X, Y)</b>.</p><button class="cta" onclick="location.reload()">Coba Lagi ↻</button></div>`;
+            }, 720);
+          }
+        }
+      }
+    }
+  }
+
+  spear.rotation.y += dt * 3.0;
+  boss.position.y = 4.5 + Math.sin(elapsed*2.5)*0.4;
+  bCore.rotation.y += dt*2.8;
+  bCore.rotation.x += dt*1.3;
+  coreRing.rotation.z += dt*1.7;
+  bossJaw.rotation.x = .12 + Math.sin(elapsed*3.3)*.10;
+  bossWings.forEach(({wing,sx},i)=>{ wing.rotation.z = sx*(.11 + Math.sin(elapsed*2.1+i)*.16); });
+  bossArms.forEach((arm,i)=>{ arm.rotation.x = Math.sin(elapsed*2.4+i)*.10; });
+  bossTail.forEach((seg,i)=>{ seg.rotation.y = Math.sin(elapsed*2.3-i*.7)*.30; });
+
+  if(shieldBlast.visible){
+    const age = elapsed - shieldBlast.userData.started;
+    const grow = 1 + age * shieldBlast.userData.radius * 1.25;
+    const ring = shieldBlast.children[0];
+    ring.scale.set(grow,grow,grow);
+    ring.material.opacity = Math.max(0, 1-age*.78);
+    shieldBlast.children.slice(1).forEach(shard=>{
+      const d = shard.userData;
+      shard.position.x = Math.cos(d.angle) * (.42 + age*d.speed*1.25);
+      shard.position.z = Math.sin(d.angle) * (.42 + age*d.speed*1.25);
+      shard.position.y = .25 + d.rise*age - 2.1*age*age;
+      shard.rotation.x += dt*10; shard.rotation.y += dt*13;
+      shard.material.opacity = Math.max(0, 1-age*.72);
+    });
+    if(age > 1.45) shieldBlast.visible = false;
+  }
+
+  const focus = new THREE.Vector3(player.position.x*0.55, 1.4, player.position.z*0.55 - 2);
+  const camPos = new THREE.Vector3(
+    focus.x + Math.sin(camYaw)*camDist*Math.cos(camPitch),
+    focus.y + camDist*Math.sin(camPitch),
+    focus.z + Math.cos(camYaw)*camDist*Math.cos(camPitch)
+  );
+  camera.position.lerp(camPos, Math.min(1, dt*9));
+  camera.lookAt(focus);
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

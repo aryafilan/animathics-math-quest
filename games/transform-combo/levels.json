@@ -1,0 +1,134 @@
+[
+  {
+    "title": "Kombo 1",
+    "desc": "Terapkan operasi berurutan, kemudian kunci ketiga ubin bayangan.",
+    "matInfo": "Refleksi sumbu-X, lalu translasi (1,1)",
+    "src": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        -1
+      ],
+      [
+        -1,
+        2
+      ]
+    ],
+    "target": [
+      [
+        2,
+        0
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        0,
+        -1
+      ]
+    ]
+  },
+  {
+    "title": "Kombo 2",
+    "desc": "Terapkan operasi berurutan, kemudian kunci ketiga ubin bayangan.",
+    "matInfo": "Rotasi 90° CCW, lalu translasi (−1,1)",
+    "src": [
+      [
+        1,
+        2
+      ],
+      [
+        -2,
+        1
+      ],
+      [
+        0,
+        -1
+      ]
+    ],
+    "target": [
+      [
+        -3,
+        2
+      ],
+      [
+        -2,
+        -1
+      ],
+      [
+        0,
+        1
+      ]
+    ]
+  },
+  {
+    "title": "Kombo 3",
+    "desc": "Terapkan operasi berurutan, kemudian kunci ketiga ubin bayangan.",
+    "matInfo": "Refleksi sumbu-Y, lalu dilatasi pusat O skala 2",
+    "src": [
+      [
+        1,
+        1
+      ],
+      [
+        -1,
+        2
+      ],
+      [
+        2,
+        -1
+      ]
+    ],
+    "target": [
+      [
+        -2,
+        2
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        -4,
+        -2
+      ]
+    ]
+  },
+  {
+    "title": "Kombo 4",
+    "desc": "Terapkan operasi berurutan, kemudian kunci ketiga ubin bayangan.",
+    "matInfo": "Refleksi y=x, lalu refleksi sumbu-X",
+    "src": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        -1,
+        -2
+      ]
+    ],
+    "target": [
+      [
+        2,
+        -1
+      ],
+      [
+        1,
+        -2
+      ],
+      [
+        -2,
+        1
+      ]
+    ]
+  }
+]

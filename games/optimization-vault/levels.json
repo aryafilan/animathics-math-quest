@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Muatan 1",
+    "desc": "Kunci satu ubin yang memenuhi semua batas dan memberikan skor terbesar. Variabel bilangan bulat 0–4.",
+    "matInfo": "1x + 1y ≤ 4; x,y ≥ 0; maks Z = 3x + 2y",
+    "src": [],
+    "target": [
+      [
+        4,
+        0
+      ]
+    ]
+  },
+  {
+    "title": "Muatan 2",
+    "desc": "Kunci satu ubin yang memenuhi semua batas dan memberikan skor terbesar. Variabel bilangan bulat 0–4.",
+    "matInfo": "2x + 1y ≤ 6; x,y ≥ 0; maks Z = 4x + 1y",
+    "src": [],
+    "target": [
+      [
+        3,
+        0
+      ]
+    ]
+  },
+  {
+    "title": "Muatan 3",
+    "desc": "Kunci satu ubin yang memenuhi semua batas dan memberikan skor terbesar. Variabel bilangan bulat 0–4.",
+    "matInfo": "1x + 2y ≤ 6; x,y ≥ 0; maks Z = 1x + 4y",
+    "src": [],
+    "target": [
+      [
+        0,
+        3
+      ]
+    ]
+  },
+  {
+    "title": "Muatan 4",
+    "desc": "Kunci satu ubin yang memenuhi semua batas dan memberikan skor terbesar. Variabel bilangan bulat 0–4.",
+    "matInfo": "1x + 1y ≤ 5; x,y ≥ 0; maks Z = 2x + 3y",
+    "src": [],
+    "target": [
+      [
+        1,
+        4
+      ]
+    ]
+  }
+]

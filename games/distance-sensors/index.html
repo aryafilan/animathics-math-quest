@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Distance Sensors | Math Quest</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap');
+  *{box-sizing:border-box;user-select:none}
+  html,body{margin:0;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:#121526;touch-action:none}
+  canvas{display:block}
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+  .topbar{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .card{background:rgba(17,22,40,0.92);backdrop-filter:blur(12px);color:#fff;padding:15px 20px;border-radius:20px;border:2px solid #00e5ff;box-shadow:0 12px 32px rgba(0,229,255,0.18);max-width:440px}
+  .badge{display:inline-block;background:linear-gradient(90deg,#40c4ff,#7c4dff);color:#fff;font-family:'Fredoka',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px}
+  .card h1{font-family:'Fredoka',sans-serif;margin:5px 0 4px;font-size:21px;color:#00e5ff}
+  .card p{margin:0;font-size:13px;color:#d8e2ff;line-height:1.45}
+  .matrix-box{margin-top:9px;background:#090d1a;border:1px solid #3949ab;padding:8px 12px;border-radius:12px;font-family:monospace;font-size:13px;color:#ffd54f;font-weight:900}
+  .right-hud{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .pill{background:rgba(17,22,40,0.92);color:#fff;padding:10px 16px;border-radius:99px;border:2px solid #5c6bc0;font-weight:900;font-size:13px;pointer-events:auto}
+  .pill span{color:#69f0ae}
+  .btn-reset{background:#ff1744;color:#fff;border:0;padding:9px 16px;border-radius:99px;font-weight:900;cursor:pointer;pointer-events:auto;box-shadow:0 4px 0 #b71c1c}
+  .coords-live{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(12,16,32,0.94);color:#fff;padding:10px 24px;border-radius:99px;border:2px solid #00e5ff;font-weight:900;font-size:15px;box-shadow:0 8px 25px rgba(0,0,0,0.5)}
+  .coords-live b{color:#ffd54f}
+  .controls-tip{position:absolute;bottom:16px;left:16px;background:rgba(17,22,40,0.88);color:#b0bec5;padding:10px 14px;border-radius:14px;font-size:12px;font-weight:800}
+  .controls-tip kbd{background:#ffffff22;color:#fff;padding:2px 6px;border-radius:5px}
+  #toast{position:fixed;top:92px;left:50%;transform:translateX(-50%);background:#0d1224;color:#69f0ae;border:2px solid #69f0ae;padding:10px 22px;border-radius:99px;font-weight:900;font-size:14px;z-index:40;opacity:0;transition:opacity .25s;pointer-events:none}
+  #toast.show{opacity:1}
+  #modal{position:fixed;inset:0;background:rgba(8,10,22,0.86);backdrop-filter:blur(8px);display:grid;place-items:center;z-index:50;padding:20px}
+  #modal.hide{display:none!important}
+  .dialog{background:#161c36;border:4px solid #00e5ff;color:#fff;max-width:490px;width:100%;border-radius:28px;padding:30px;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,0.7)}
+  .dialog h2{font-family:'Fredoka',sans-serif;font-size:30px;color:#00e5ff;margin:8px 0}
+  .dialog p{color:#cad5f5;font-size:15px;line-height:1.6}
+  .cta{background:linear-gradient(135deg,#00e676,#00b0ff);color:#051f18;font:inherit;font-weight:900;font-size:16px;border:0;border-radius:14px;padding:14px 22px;width:100%;cursor:pointer;margin-top:12px;box-shadow:0 6px 0 #00897b}
+  #mobile{display:none;position:fixed;inset:0;pointer-events:none;z-index:20}
+  .joy{position:absolute;bottom:28px;left:24px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.18);border:3px solid rgba(255,255,255,0.45);pointer-events:auto;touch-action:none}
+  .knob{position:absolute;top:36px;left:36px;width:48px;height:48px;border-radius:50%;background:#fff}
+  .m-btns{position:absolute;bottom:32px;right:24px;display:flex;gap:12px;pointer-events:auto}
+  .m-btns button{width:64px;height:64px;border-radius:50%;background:#ffd54f;color:#111;font-size:16px;font-weight:900;border:3px solid #fff}
+  @media(hover:none),(pointer:coarse){#mobile{display:block}.controls-tip{display:none}.coords-live{bottom:160px}}
+@media(max-width:700px){.topbar{gap:6px}.card{padding:8px 10px;max-width:70vw}.card h1{font-size:15px}.card p,.matrix-box{font-size:11px}.pill{font-size:11px;padding:5px 8px}.coords-live{font-size:12px;max-width:94vw;white-space:nowrap;padding:8px 12px}}
+</style>
+</head>
+<body>
+<div id="hud">
+  <div class="topbar">
+    <div class="card">
+      <span class="badge">JARAK DUA TITIK • MATH QUEST</span>
+      <h1 id="lvlTitle">Gelombang 1: Refleksi Sumbu-Y</h1>
+      <p id="lvlDesc">Injak 3 ubin koordinat bayangan hasil pencerminan pilar Kristal Ungu terhadap Sumbu-Y!</p>
+      <div class="matrix-box" id="lvlMat">Pilar Awal: A(1,2), B(3,1), C(2,3)</div>
+    </div>
+    <div class="right-hud">
+      <div class="pill">⚡ GELOMBANG <span id="wTxt">1 / 4</span></div>
+      <div class="pill">🟩 UBIN AKTIF <span id="tTxt">0 / 3</span></div>
+      <button class="btn-reset" id="resetTiles">↺ Reset Ubin [R]</button>
+    </div>
+  </div>
+  <div class="coords-live" id="posHud">Posisi Avatar: <b>(0, 0)</b> &nbsp;|&nbsp; Tekan <b>[E] / [SPACE]</b> untuk Injak Ubin</div>
+  <div class="controls-tip"><kbd>WASD</kbd> Lari di Grid &nbsp;<kbd>SPACE / E</kbd> Injak/Kunci Ubin &nbsp;<kbd>R</kbd> Reset &nbsp;<kbd>DRAG MOUSE</kbd> Kamera</div>
+</div>
+
+<div id="toast"></div>
+
+<div id="modal">
+  <div class="dialog">
+    <div style="font-size:56px">🥷🟦⚡</div>
+    <h2>DISTANCE SENSORS</h2>
+    <p>Pasang sensor pada semua titik yang berjarak tepat dari kristal pusat.<br><br>Gerakkan avatar ke ubin jawaban, tekan E atau SPACE untuk mengaktifkannya. Ubin hijau bisa dibatalkan dengan menginjaknya lagi. R untuk reset.</p>
+    <button class="cta" id="startBtn" onclick="document.getElementById('modal').classList.add('hide')">Masuk ke Stadion ▶</button>
+  </div>
+</div>
+
+<div id="mobile">
+  <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
+  <div class="m-btns">
+    <button id="mStamp">INJAK</button>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+
+const $ = s => document.querySelector(s);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0f1325);
+scene.fog = new THREE.FogExp2(0x0f1325, 0.011);
+
+const camera = new THREE.PerspectiveCamera(58, innerWidth/innerHeight, 0.1, 220);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xd0e2ff, 0x121629, 1.55));
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.9);
+dirLight.position.set(20, 38, 24);
+dirLight.castShadow = true; dirLight.shadow.mapSize.set(1024,1024); Object.assign(dirLight.shadow.camera,{left:-17,right:17,top:17,bottom:-17,near:0.5,far:90}); dirLight.shadow.bias=-0.0004;
+scene.add(dirLight);
+
+function drawRoundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  if(ctx.roundRect) ctx.roundRect(x, y, w, h, r);
+  else ctx.rect(x, y, w, h);
+  ctx.closePath();
+}
+
+function createStudTex(hex){
+  const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = hex; ctx.fillRect(0,0,64,64);
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 3;
+  ctx.strokeRect(2,2,60,60);
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.beginPath(); ctx.arc(32, 32, 14, 0, Math.PI*2); ctx.fill();
+  return new THREE.CanvasTexture(c);
+}
+
+function sfx(freq=520, dur=0.1, type='sine'){
+  try{
+    const ac = sfx.ac || (sfx.ac = new (window.AudioContext||window.webkitAudioContext)());
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.08, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur);
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime+dur);
+  }catch(e){}
+}
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.tm); toast.tm = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+function makeLabel(txt, x, y, z, fg='#ffd54f', s=0.55){
+  const c = document.createElement('canvas'); c.width = 256; c.height = 96;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(12,16,32,0.9)'; drawRoundRect(ctx, 4, 4, 248, 88, 22); ctx.fill();
+  ctx.strokeStyle = fg; ctx.lineWidth = 4; ctx.stroke();
+  ctx.font = '900 40px Nunito, sans-serif'; ctx.fillStyle = fg;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(txt, 128, 50);
+  const tex = new THREE.CanvasTexture(c);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false}));
+  sp.position.set(x, y, z); sp.scale.set(2.6*s, 1*s, 1);
+  scene.add(sp); return sp;
+}
+
+// Build Cyber Stadium Environment & Neon Skyline
+const TILE_STEP = 2.4;
+const tiles = new Map();
+
+const baseFloor = new THREE.Mesh(new THREE.BoxGeometry(28, 0.8, 28), new THREE.MeshStandardMaterial({color:0x1b2038, roughness:0.7}));
+baseFloor.position.set(0, -0.45, 0); baseFloor.receiveShadow = true; scene.add(baseFloor);
+
+// Stadium Perimeter Walls & Corner Laser Towers
+for(let side of [-1, 1]){
+  const wallX = new THREE.Mesh(new THREE.BoxGeometry(28, 1.4, 0.8), new THREE.MeshStandardMaterial({color:0x01579b}));
+  wallX.position.set(0, 0.4, side*13.8); scene.add(wallX);
+  const wallZ = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.4, 28), new THREE.MeshStandardMaterial({color:0x01579b}));
+  wallZ.position.set(side*13.8, 0.4, 0); scene.add(wallZ);
+}
+for(let cx of [-13.5, 13.5]){
+  for(let cz of [-13.5, 13.5]){
+    const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.1, 6.5, 8), new THREE.MeshStandardMaterial({color:0x37474f, metalness:0.5}));
+    tower.position.set(cx, 3.0, cz); scene.add(tower);
+    const orb = new THREE.Mesh(new THREE.OctahedronGeometry(0.9, 0), new THREE.MeshStandardMaterial({color:0x00e5ff, emissive:0x00b0ff, emissiveIntensity:0.8}));
+    orb.position.set(cx, 7.2, cz); scene.add(orb);
+  }
+}
+
+// Background Cyber City Skyscrapers
+for(let i=0;i<28;i++){
+  const ang = (i/28)*Math.PI*2;
+  const rad = 28 + (i%3)*7;
+  const bx = Math.cos(ang)*rad, bz = Math.sin(ang)*rad;
+  const bh = 8 + (i%5)*4.5;
+  const bldg = new THREE.Mesh(new THREE.BoxGeometry(4.2, bh, 4.2), new THREE.MeshStandardMaterial({color:0x151b33, roughness:0.6}));
+  bldg.position.set(bx, bh/2 - 2, bz); scene.add(bldg);
+  const neonCap = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.4, 4.4), new THREE.MeshBasicMaterial({color:[0x00e5ff, 0x40c4ff, 0x7c4dff][i%3]}));
+  neonCap.position.set(bx, bh - 1.8, bz); scene.add(neonCap);
+}
+
+const axisMat = new THREE.MeshBasicMaterial({color:0x00e5ff});
+scene.add(new THREE.Mesh(new THREE.BoxGeometry(22.5, 0.1, 0.16), axisMat));
+scene.add(new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 22.5), axisMat));
+
+const texOrigin = createStudTex('#3949ab');
+const texAxis   = createStudTex('#283593');
+const texNormal = createStudTex('#1e2542');
+
+for(let gx=-4; gx<=4; gx++){
+  for(let gy=-4; gy<=4; gy++){
+    const wx = gx * TILE_STEP, wz = -gy * TILE_STEP;
+    const isOrigin = (gx===0 && gy===0);
+    const baseCol = isOrigin ? 0x3949ab : ((gx===0||gy===0) ? 0x2c386b : 0x232b4a);
+    const tex = isOrigin ? texOrigin : ((gx===0||gy===0) ? texAxis : texNormal);
+    const mat = new THREE.MeshStandardMaterial({map:tex, color:0xffffff, roughness:0.4, metalness:0.15});
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.26, 2.1), mat);
+    mesh.position.set(wx, 0.13, wz); mesh.receiveShadow = true;
+    scene.add(mesh);
+    tiles.set(`${gx},${gy}`, {gx, gy, wx, wz, mesh, mat, baseCol, active:false});
+    if(gx===0 && gy!==0) makeLabel(`${gy}`, wx+0.62, 0.48, wz, '#80d8ff', 0.38);
+    if(gy===0 && gx!==0) makeLabel(`${gx}`, wx, 0.48, wz+0.62, '#80d8ff', 0.38);
+  }
+}
+makeLabel('SUMBU +X →', 5.2*TILE_STEP, 1.3, 0, '#00e5ff', 0.8);
+makeLabel('↑ SUMBU +Y', 0, 1.3, -5.2*TILE_STEP, '#00e5ff', 0.8);
+
+// Detailed Roblox Cyber Ninja Avatar
+function createCyberNinja(){
+  const root = new THREE.Group();
+  const suitMat = new THREE.MeshStandardMaterial({color:0x1a237e, roughness:0.35});
+  const armorMat = new THREE.MeshStandardMaterial({color:0x40c4ff, roughness:0.3, metalness:0.3});
+  const skinMat = new THREE.MeshStandardMaterial({color:0xffcc80});
+  const visorMat = new THREE.MeshStandardMaterial({color:0x00e5ff, emissive:0x00e5ff, emissiveIntensity:0.85});
+  const darkMat = new THREE.MeshStandardMaterial({color:0x111524});
+
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(1.12, 1.2, 0.56), suitMat);
+  torso.position.y = 1.6; torso.castShadow = true; root.add(torso);
+  // Chest X-Armor
+  const vest = new THREE.Mesh(new THREE.BoxGeometry(1.16, 0.75, 0.60), armorMat);
+  vest.position.y = 1.72; root.add(vest);
+  const core = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 0), visorMat);
+  core.position.set(0, 1.72, -0.32); root.add(core);
+
+  // Dual Cyber Katanas on Back (+Z)
+  for(let ang of [-0.45, 0.45]){
+    const sword = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.85, 0.06), visorMat);
+    sword.position.set(0, 1.85, 0.35); sword.rotation.z = ang; root.add(sword);
+  }
+
+  const head = new THREE.Group(); head.position.y = 2.55; root.add(head);
+  const helmet = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.44, 0.76, 20), darkMat);
+  helmet.castShadow = true; head.add(helmet);
+  const visor = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.22, 0.45), visorMat);
+  visor.position.set(0, 0.06, -0.26); head.add(visor);
+  const crest = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.32, 0.85), armorMat);
+  crest.position.set(0, 0.44, 0); head.add(crest);
+
+  function limb(w,h,d,mat,accent,x,y){
+    const g = new THREE.Group(); g.position.set(x,y,0);
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
+    m.position.y = -h/2; m.castShadow = true; g.add(m);
+    const pad = new THREE.Mesh(new THREE.BoxGeometry(w+0.05, 0.22, d+0.05), accent);
+    pad.position.y = -h + 0.12; g.add(pad);
+    root.add(g); return g;
+  }
+  const lArm = limb(0.44, 1.12, 0.44, suitMat, armorMat, -0.82, 2.12);
+  const rArm = limb(0.44, 1.12, 0.44, suitMat, armorMat,  0.82, 2.12);
+  const lLeg = limb(0.48, 1.0,  0.50, darkMat, visorMat, -0.28, 1.0);
+  const rLeg = limb(0.48, 1.0,  0.50, darkMat, visorMat,  0.28, 1.0);
+  return {root, lArm, rArm, lLeg, rLeg};
+}
+
+const ninja = createCyberNinja();
+const player = ninja.root;
+scene.add(player);
+
+const sourceGroup = new THREE.Group(); scene.add(sourceGroup);
+
+const waves = [{"title":"Sensor 1","desc":"Aktifkan semua 8 ubin dengan jarak tepat dari kristal pusat, dalam batas arena.","matInfo":"Pusat (0,0); jarak = √5","src":[[0,0]],"target":[[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]},{"title":"Sensor 2","desc":"Aktifkan semua 4 ubin dengan jarak tepat dari kristal pusat, dalam batas arena.","matInfo":"Pusat (1,1); jarak = √4","src":[[1,1]],"target":[[-1,1],[1,-1],[1,3],[3,1]]},{"title":"Sensor 3","desc":"Aktifkan semua 8 ubin dengan jarak tepat dari kristal pusat, dalam batas arena.","matInfo":"Pusat (-1,0); jarak = √10","src":[[-1,0]],"target":[[-4,-1],[-4,1],[-2,-3],[-2,3],[0,-3],[0,3],[2,-1],[2,1]]},{"title":"Sensor 4","desc":"Aktifkan semua 4 ubin dengan jarak tepat dari kristal pusat, dalam batas arena.","matInfo":"Pusat (0,-1); jarak = √9","src":[[0,-1]],"target":[[-3,-1],[0,-4],[0,2],[3,-1]]}];
+
+let curWave = 0, transitioning = false;
+const selectedKeys = new Set();
+
+function clearTiles(){
+  selectedKeys.clear();
+  for(const t of tiles.values()){
+    t.active = false;
+    t.mat.color.setHex(0xffffff);
+    t.mat.emissive.setHex(0x000000);
+    t.mesh.position.y = 0.13;
+  }
+  $('#tTxt').textContent = `0 / ${waves[curWave].target.length}`;
+}
+
+function loadWave(){
+  clearTiles();
+  while(sourceGroup.children.length) sourceGroup.remove(sourceGroup.children[0]);
+  const w = waves[curWave];
+  $('#lvlTitle').textContent = w.title;
+  $('#lvlDesc').textContent = w.desc;
+  $('#lvlMat').textContent = w.matInfo;
+  $('#wTxt').textContent = `${curWave+1} / ${waves.length}`;
+
+  w.src.forEach(([sx, sy], i)=>{
+    const wx = sx * TILE_STEP, wz = -sy * TILE_STEP;
+    const crystal = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.65, 0),
+      new THREE.MeshStandardMaterial({color:0xd500f9, emissive:0xaa00ff, emissiveIntensity:0.75, metalness:0.3, roughness:0.2})
+    );
+    crystal.position.set(wx, 1.5, wz);
+    sourceGroup.add(crystal);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.06, 8, 24), new THREE.MeshBasicMaterial({color:0xea80fc}));
+    ring.rotation.x = Math.PI/2; ring.position.set(wx, 0.32, wz);
+    sourceGroup.add(ring);
+    const lbl = makeLabel(`P${i+1}(${sx},${sy})`, wx, 2.75, wz, '#ea80fc', 0.55);
+    sourceGroup.attach(lbl);
+  });
+}
+loadWave();
+
+function getPlayerGrid(){
+  const gx = Math.round(player.position.x / TILE_STEP);
+  const gy = Math.round(-player.position.z / TILE_STEP);
+  return [THREE.MathUtils.clamp(gx, -4, 4), THREE.MathUtils.clamp(gy, -4, 4)];
+}
+
+function stampCurrentTile(){
+  if(transitioning || !$('#modal').classList.contains('hide') || curWave >= waves.length) return;
+  const [gx, gy] = getPlayerGrid();
+  const key = `${gx},${gy}`;
+  const t = tiles.get(key);
+  if(!t) return;
+
+  if(t.active){
+    t.active = false;
+    selectedKeys.delete(key);
+    t.mat.color.setHex(0xffffff);
+    t.mat.emissive.setHex(0x000000);
+    t.mesh.position.y = 0.13;
+    sfx(340, 0.08);
+  } else {
+    if(selectedKeys.size >= waves[curWave].target.length){
+      toast('⚠️ Jumlah ubin sudah penuh. Injak ulang atau reset.');
+      sfx(220, 0.12, 'sawtooth');
+      return;
+    }
+    t.active = true;
+    selectedKeys.add(key);
+    t.mat.color.setHex(0x00e676);
+    t.mat.emissive.setHex(0x00c853);
+    t.mesh.position.y = 0.26;
+    sfx(640, 0.1, 'triangle');
+  }
+  $('#tTxt').textContent = `${selectedKeys.size} / ${waves[curWave].target.length}`;
+
+  if(selectedKeys.size === waves[curWave].target.length){
+    const w = waves[curWave];
+    const allMatch = w.target.every(([tx, ty]) => selectedKeys.has(`${tx},${ty}`));
+    if(allMatch){
+      transitioning = true;
+      sfx(920, 0.28, 'triangle');
+      toast('🎉 Tepat sekali! Semua ubin jawaban tepat!');
+      setTimeout(()=>{
+        curWave++;
+        if(curWave >= waves.length){
+          $('#modal').classList.remove('hide');
+          $('#modal').innerHTML = `<div class="dialog"><div style="font-size:60px">🏆⚡</div><h2>DISTANCE SENSORS — MISI SELESAI!</h2><p>Semua misi berhasil diselesaikan. Kamu menguasai arena Jarak dua titik!</p><button class="cta" onclick="location.reload()">Main Lagi ↻</button></div>`;
+        } else {
+          loadWave(); transitioning = false;
+        }
+      }, 1100);
+    } else {
+      sfx(210, 0.25, 'sawtooth');
+      toast('❌ Koordinat ubin belum tepat! Periksa kembali petunjuk di kiri atas.');
+    }
+  }
+}
+
+$('#resetTiles').onclick = ()=>{ if(!transitioning && curWave < waves.length){clearTiles(); sfx(300, 0.1);} };
+
+const keys = new Set(), joyVec = {x:0, y:0};
+let camYaw = 0, camPitch = 0.62, camDist = 15.5, velY = 0;
+
+window.addEventListener('keydown', e=>{
+  keys.add(e.code);
+  if(!e.repeat && (e.code==='KeyE'||e.code==='Space') && $('#modal').classList.contains('hide')){
+    velY = 7.0;
+    stampCurrentTile();
+  }
+  if(e.code==='KeyR' && !transitioning && curWave < waves.length) clearTiles();
+});
+window.addEventListener('keyup', e=>keys.delete(e.code)); window.addEventListener('blur',()=>{keys.clear(); joyVec.x=joyVec.y=0;});
+
+let drag = false, lx = 0, ly = 0;
+renderer.domElement.addEventListener('pointerdown', e=>{
+  if(e.clientX < 180 && matchMedia('(hover:none),(pointer:coarse)').matches) return;
+  drag = true; lx = e.clientX; ly = e.clientY;
+});
+window.addEventListener('pointermove', e=>{
+  if(!drag) return;
+  camYaw -= (e.clientX - lx)*0.005;
+  camPitch = THREE.MathUtils.clamp(camPitch + (e.clientY - ly)*0.004, 0.2, 1.25);
+  lx = e.clientX; ly = e.clientY;
+});
+window.addEventListener('pointerup', ()=>drag=false);
+renderer.domElement.addEventListener('wheel', e=>{
+  camDist = THREE.MathUtils.clamp(camDist + Math.sign(e.deltaY)*1.0, 8, 25);
+}, {passive:true});
+
+const joy = $('#joy'), knob = $('#knob');
+function handleJoy(e){
+  const r = joy.getBoundingClientRect();
+  let dx = (e.clientX - (r.left + r.width/2)) / (r.width*0.4);
+  let dy = (e.clientY - (r.top + r.height/2)) / (r.height*0.4);
+  const len = Math.hypot(dx, dy);
+  if(len > 1){ dx/=len; dy/=len; }
+  joyVec.x = dx; joyVec.y = dy;
+  knob.style.transform = `translate(${dx*32}px, ${dy*32}px)`;
+}
+joy.addEventListener('pointerdown', e=>{ joy.setPointerCapture(e.pointerId); handleJoy(e); });
+joy.addEventListener('pointermove', e=>{ if(e.buttons) handleJoy(e); });
+for(const type of ['pointerup','pointercancel','lostpointercapture']) joy.addEventListener(type, ()=>{ joyVec.x=0; joyVec.y=0; knob.style.transform=''; });
+$('#mStamp').onclick = ()=>{ velY = 7.0; stampCurrentTile(); };
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+const clock = new THREE.Clock();
+let walkT = 0;
+
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(0.04, clock.getDelta());
+
+  if($('#modal').classList.contains('hide')){
+    let fwd = (keys.has('KeyW')||keys.has('ArrowUp')?1:0) - (keys.has('KeyS')||keys.has('ArrowDown')?1:0) - joyVec.y;
+    let side = (keys.has('KeyD')||keys.has('ArrowRight')?1:0) - (keys.has('KeyA')||keys.has('ArrowLeft')?1:0) + joyVec.x;
+    const len = Math.hypot(fwd, side);
+    const spd = 7.0;
+
+    if(len > 0.05){
+      fwd/=len; side/=len;
+      const vx = side*Math.cos(camYaw) - fwd*Math.sin(camYaw);
+      const vz = -side*Math.sin(camYaw) - fwd*Math.cos(camYaw);
+      player.position.x = THREE.MathUtils.clamp(player.position.x + vx*spd*dt, -4.3*TILE_STEP, 4.3*TILE_STEP);
+      player.position.z = THREE.MathUtils.clamp(player.position.z + vz*spd*dt, -4.3*TILE_STEP, 4.3*TILE_STEP);
+      const rot = Math.atan2(-vx, -vz);
+      player.rotation.y += Math.atan2(Math.sin(rot - player.rotation.y), Math.cos(rot - player.rotation.y))*Math.min(1, dt*12);
+      walkT += dt * spd * 2.2;
+    } else {
+      walkT = 0;
+    }
+
+    velY -= 22 * dt;
+    player.position.y = Math.max(0.24, player.position.y + velY * dt);
+    if(player.position.y <= 0.24) velY = 0;
+
+    const sw = len > 0.05 ? Math.sin(walkT)*0.7 : 0;
+    ninja.lArm.rotation.x = sw; ninja.rArm.rotation.x = -sw;
+    ninja.lLeg.rotation.x = -sw; ninja.rLeg.rotation.x = sw;
+
+    const [gx, gy] = getPlayerGrid();
+    $('#posHud').innerHTML = `Posisi Avatar: <b>(${gx}, ${gy})</b> &nbsp;|&nbsp; Tekan <b>[E] / [SPACE]</b> untuk Injak Ubin`;
+  }
+
+  sourceGroup.children.forEach(c => { if(c.geometry?.type==='OctahedronGeometry') c.rotation.y += dt*2; });
+
+  const focus = new THREE.Vector3(player.position.x*0.6, 1.3, player.position.z*0.6);
+  const camPos = new THREE.Vector3(
+    focus.x + Math.sin(camYaw)*camDist*Math.cos(camPitch),
+    focus.y + camDist*Math.sin(camPitch),
+    focus.z + Math.cos(camYaw)*camDist*Math.cos(camPitch)
+  );
+  camera.position.lerp(camPos, Math.min(1, dt*9));
+  camera.lookAt(focus);
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

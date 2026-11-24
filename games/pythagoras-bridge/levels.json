@@ -1,0 +1,78 @@
+[
+  {
+    "title": "Jembatan 1",
+    "desc": "Pilih semua 2 titik di sebelah kanan dan atas P, dengan jarak tepat 5 satuan. Gunakan Pythagoras.",
+    "matInfo": "P=(0,0); Δx² + Δy² = 25; Δx, Δy > 0",
+    "src": [
+      [
+        0,
+        0
+      ]
+    ],
+    "target": [
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "title": "Jembatan 2",
+    "desc": "Pilih semua 2 titik di sebelah kanan dan atas P, dengan jarak tepat 5 satuan. Gunakan Pythagoras.",
+    "matInfo": "P=(-1,0); Δx² + Δy² = 25; Δx, Δy > 0",
+    "src": [
+      [
+        -1,
+        0
+      ]
+    ],
+    "target": [
+      [
+        2,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ]
+  },
+  {
+    "title": "Jembatan 3",
+    "desc": "Pilih semua 1 titik di sebelah kanan dan atas P, dengan jarak tepat 5 satuan. Gunakan Pythagoras.",
+    "matInfo": "P=(1,-1); Δx² + Δy² = 25; Δx, Δy > 0",
+    "src": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "target": [
+      [
+        4,
+        3
+      ]
+    ]
+  },
+  {
+    "title": "Jembatan 4",
+    "desc": "Pilih semua 1 titik di sebelah kanan dan atas P, dengan jarak tepat 5 satuan. Gunakan Pythagoras.",
+    "matInfo": "P=(0,1); Δx² + Δy² = 25; Δx, Δy > 0",
+    "src": [
+      [
+        0,
+        1
+      ]
+    ],
+    "target": [
+      [
+        4,
+        4
+      ]
+    ]
+  }
+]

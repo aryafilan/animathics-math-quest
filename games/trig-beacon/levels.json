@@ -1,0 +1,102 @@
+[
+  {
+    "title": "Antena 1",
+    "desc": "Kunci 2 ubin searah sinar dari O. Sudut diukur dari +X berlawanan arah jarum jam.",
+    "matInfo": "θ = 0°; cos θ = 1, sin θ = 0; r=2 dan 4",
+    "src": [
+      [
+        0,
+        0
+      ]
+    ],
+    "target": [
+      [
+        2,
+        0
+      ],
+      [
+        4,
+        0
+      ]
+    ]
+  },
+  {
+    "title": "Antena 2",
+    "desc": "Kunci 2 ubin searah sinar dari O. Sudut diukur dari +X berlawanan arah jarum jam.",
+    "matInfo": "θ = 90°; cos θ = 0, sin θ = 1; r=2 dan 4",
+    "src": [
+      [
+        0,
+        0
+      ]
+    ],
+    "target": [
+      [
+        0,
+        2
+      ],
+      [
+        0,
+        4
+      ]
+    ]
+  },
+  {
+    "title": "Antena 3",
+    "desc": "Kunci 4 ubin searah sinar dari O. Sudut diukur dari +X berlawanan arah jarum jam.",
+    "matInfo": "θ = 135°; cos θ = −√2/2, sin θ = √2/2; semua titik bulat pada sinar, kecuali O",
+    "src": [
+      [
+        0,
+        0
+      ]
+    ],
+    "target": [
+      [
+        -1,
+        1
+      ],
+      [
+        -2,
+        2
+      ],
+      [
+        -3,
+        3
+      ],
+      [
+        -4,
+        4
+      ]
+    ]
+  },
+  {
+    "title": "Antena 4",
+    "desc": "Kunci 4 ubin searah sinar dari O. Sudut diukur dari +X berlawanan arah jarum jam.",
+    "matInfo": "θ = 315°; cos θ = √2/2, sin θ = −√2/2; semua titik bulat pada sinar, kecuali O",
+    "src": [
+      [
+        0,
+        0
+      ]
+    ],
+    "target": [
+      [
+        1,
+        -1
+      ],
+      [
+        2,
+        -2
+      ],
+      [
+        3,
+        -3
+      ],
+      [
+        4,
+        -4
+      ]
+    ]
+  }
+]

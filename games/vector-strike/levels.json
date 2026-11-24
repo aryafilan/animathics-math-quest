@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Jangkar 1",
+    "desc": "Temukan ujung resultan dari O. Ketiga vektor adalah perpindahan, bukan tiga titik jawaban.",
+    "matInfo": "u=(1, -2), v=(2, 3), w=(-1, 1); R = u + v + w",
+    "src": [],
+    "target": [
+      [
+        2,
+        2
+      ]
+    ]
+  },
+  {
+    "title": "Jangkar 2",
+    "desc": "Temukan ujung resultan dari O. Ketiga vektor adalah perpindahan, bukan tiga titik jawaban.",
+    "matInfo": "u=(-2, 1), v=(3, -2), w=(1, 3); R = u + v + w",
+    "src": [],
+    "target": [
+      [
+        2,
+        2
+      ]
+    ]
+  },
+  {
+    "title": "Jangkar 3",
+    "desc": "Temukan ujung resultan dari O. Ketiga vektor adalah perpindahan, bukan tiga titik jawaban.",
+    "matInfo": "u=(3, 2), v=(-2, -3), w=(-2, 2); R = u + v + w",
+    "src": [],
+    "target": [
+      [
+        -1,
+        1
+      ]
+    ]
+  },
+  {
+    "title": "Jangkar 4",
+    "desc": "Temukan ujung resultan dari O. Ketiga vektor adalah perpindahan, bukan tiga titik jawaban.",
+    "matInfo": "u=(-3, -1), v=(1, 3), w=(2, -4); R = u + v + w",
+    "src": [],
+    "target": [
+      [
+        0,
+        -2
+      ]
+    ]
+  }
+]
