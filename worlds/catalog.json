@@ -1,0 +1,101 @@
+[
+  {
+    "id": "crystal-mines",
+    "title": "Crystal Mines",
+    "topic": "Faktorisasi prima",
+    "level": "SMP",
+    "rounds": 4,
+    "description": "Jelajahi gua, tambang kristal prima, dan pecahkan inti batu menjadi faktor-faktornya.",
+    "genre": "Mining adventure",
+    "color": "#c594ff",
+    "symbol": "⛏"
+  },
+  {
+    "id": "velocity-rush",
+    "title": "Velocity Rush",
+    "topic": "Fungsi linear",
+    "level": "SMP/SMA",
+    "rounds": 4,
+    "description": "Atur kecepatan kendaraan untuk menyusul pembalap di garis pertemuan.",
+    "genre": "Arcade racing",
+    "color": "#ffb44a",
+    "symbol": "🏁"
+  },
+  {
+    "id": "bridge-master",
+    "title": "Bridge Master",
+    "topic": "Teorema Pythagoras",
+    "level": "SMP",
+    "rounds": 4,
+    "description": "Ukur jurang diagonal, pilih balok, pasang jembatan, lalu seberangi.",
+    "genre": "Construction adventure",
+    "color": "#94e3a5",
+    "symbol": "🌉"
+  },
+  {
+    "id": "cosmic-navigator",
+    "title": "Cosmic Navigator",
+    "topic": "Vektor",
+    "level": "SMA",
+    "rounds": 4,
+    "description": "Atur komponen dorongan pesawat dan navigasikan rute di antara asteroid.",
+    "genre": "Space navigation",
+    "color": "#72dfff",
+    "symbol": "🚀"
+  },
+  {
+    "id": "number-factory",
+    "title": "Number Factory",
+    "topic": "Barisan dan deret",
+    "level": "SMP/SMA",
+    "rounds": 4,
+    "description": "Kalibrasi mesin, produksi paket energi berurutan, dan penuhi pesanan.",
+    "genre": "Factory simulation",
+    "color": "#ffd86c",
+    "symbol": "⚙"
+  },
+  {
+    "id": "deep-blue",
+    "title": "Deep Blue",
+    "topic": "Persamaan linear",
+    "level": "SMP/SMA",
+    "rounds": 4,
+    "description": "Kendalikan ballast kapal selam untuk mencapai kedalaman harta karun.",
+    "genre": "Underwater exploration",
+    "color": "#48e6de",
+    "symbol": "🐠"
+  },
+  {
+    "id": "matrix-blox",
+    "title": "Arena Matriks Blox",
+    "topic": "Transformasi geometri",
+    "level": "SMP/SMA",
+    "description": "Injak bayangan tiga kristal setelah transformasi.",
+    "rounds": 4,
+    "genre": "Spatial puzzle",
+    "color": "#8bb5ff",
+    "symbol": "◇"
+  },
+  {
+    "id": "circle-meteor",
+    "title": "Lingkaran Meteor",
+    "topic": "Persamaan lingkaran",
+    "level": "SMA",
+    "description": "Berlari ke dalam perisai sebelum meteor datang.",
+    "rounds": 5,
+    "genre": "Boss battle",
+    "color": "#ff805d",
+    "symbol": "🐉"
+  },
+  {
+    "id": "skybound",
+    "title": "Skybound Transform Quest",
+    "topic": "Transformasi geometri",
+    "level": "SMP/SMA",
+    "rounds": 12,
+    "description": "Jelajahi pulau awan, melompat, dash, dan kumpulkan dua belas runa.",
+    "genre": "Adventure platformer",
+    "color": "#c2b5ff",
+    "symbol": "☁"
+  }
+]

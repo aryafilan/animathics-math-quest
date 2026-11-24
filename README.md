@@ -1,3 +1,13 @@
+# Math Quest — v0.4.0
+
+[Mainkan katalog](https://aryafilan.github.io/animathics-math-quest/)
+
+Enam prototipe dunia 3D baru (24 misi): Crystal Mines, Velocity Rush, Bridge Master, Cosmic Navigator, Number Factory, Deep Blue. Tiga game referensi termasuk Skybound asli. Dua belas eksperimen lama masih ada di bagian arsip katalog; path dan source lama tidak berubah.
+
+`worlds/missions.mjs` menyimpan data dan fungsi matematika, `worlds/engine.js` utilitas visual, `worlds/play.js` enam mekanik, `worlds/catalog.json` metadata. `node scripts/test-worlds.mjs` menguji data misi. Game menggunakan CDN Three.js. Gameplay browser belum terverifikasi; status prototipe.
+
+<details><summary>Dokumentasi versi sebelumnya</summary>
+
 # Math Quest — Arena Collection v0.3.0
 
 Animathics Studio. Koleksi game 3D arena, berbasis dua source HTML pengguna. Buka `index.html` melalui Chrome/Edge dengan internet. Tiap game mandiri, memakai Three.js 0.160.1 dari CDN. WASD/panah, mouse drag, joystick, E/Space untuk kunci ubin atau lompat, tergantung game.
@@ -29,3 +39,5 @@ Dua source asli berada di templates/. Game baru diturunkan dari source asli; lev
 Jalankan `node scripts/validate.mjs` (Node 20+). Ini memeriksa sintaks modul JavaScript, data target dan tautan katalog, bukan uji gameplay browser penuh.
 
 Katalog diuji melalui Chromium: 14 kartu, pencarian SPLDV, filter SMP lulus. Three.js CDN tidak dapat dijangkau dari lingkungan pengujian; gameplay 3D belum diuji di browser.
+
+</details>

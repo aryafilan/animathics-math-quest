@@ -1,0 +1,13 @@
+name: Validate new worlds
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --input-type=module --check < worlds/engine.js
+      - run: node --input-type=module --check < worlds/play.js
+      - run: node scripts/test-worlds.mjs

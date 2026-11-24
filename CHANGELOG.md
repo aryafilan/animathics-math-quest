@@ -1,6 +1,9 @@
-# Changelog
+## v0.4.0 — Six worlds
 
-## v0.3.0 — 2026-11-24
+- 6 prototipe dengan 24 misi: mining, racing, construction, navigation, factory, submarine.
+- Skybound asli ditambahkan; 12 turunan lama ditampilkan sebagai arsip tanpa dihapus.
+- Katalog baru dan workflow validasi matematika.
 
-- 14 arena 3D: 2 game asli dan 12 turunan dengan 51 level baru.
-- Katalog SMP/SMA, level JSON, template asli, validasi otomatis.
+## v0.3.0
+
+- 14 game arena, 51 level turunan.
