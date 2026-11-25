@@ -22,7 +22,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "feasible-zone",
@@ -34,7 +35,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "inequality-raid",
@@ -46,7 +48,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "transform-combo",
@@ -58,7 +61,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "skybound",
@@ -70,7 +74,8 @@
     "genre": "Adventure platformer",
     "color": "#c2b5ff",
     "symbol": "☁",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "circle-meteor",
@@ -82,7 +87,8 @@
     "genre": "Boss battle",
     "color": "#ff805d",
     "symbol": "🐉",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "bazar-alkimia",
@@ -94,7 +100,8 @@
     "symbol": "💎",
     "color": "#df9aff",
     "description": "Kumpulkan kristal Surya dan Bulan, hindari golem, dan racik komposisi SPLDV di kuali.",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "laser-line",
@@ -106,7 +113,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "cosmic-navigator",
@@ -118,7 +126,8 @@
     "genre": "Space navigation",
     "color": "#72dfff",
     "symbol": "🚀",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "crystal-mines",
@@ -130,7 +139,8 @@
     "genre": "Mining adventure",
     "color": "#c594ff",
     "symbol": "⛏",
-    "archived": false
+    "archived": false,
+    "adventure": false
   },
   {
     "id": "legendary-blacksmith",
@@ -142,7 +152,8 @@
     "symbol": "⚒",
     "color": "#ffad6d",
     "description": "Berburu bijih, hindari drone penjaga, lalu tempa pedang dengan komposisi logam dan timing palu yang tepat.",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "castle-siege",
@@ -154,7 +165,8 @@
     "symbol": "🏰",
     "color": "#ffce80",
     "description": "Kendalikan ketapel, atur kecepatan vertikal, dan bidik benteng dengan lintasan parabola.",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "harvest-kingdom",
@@ -166,7 +178,8 @@
     "symbol": "🌾",
     "color": "#9ce8a4",
     "description": "Tanam dan panen kebun sambil mengoptimalkan keuntungan dengan batas air dan lahan.",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "potion-master",
@@ -178,7 +191,8 @@
     "symbol": "⚗",
     "color": "#e5a2ff",
     "description": "Operasikan pompa ramuan, kontrol volume dan konsentrasi, lalu kirim obat.",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "pirate-expedition",
@@ -190,7 +204,8 @@
     "symbol": "⛵",
     "color": "#8fd9ff",
     "description": "Kemudikan kapal secara langsung, baca kompas, hindari karang, dan temukan harta tersembunyi.",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "math-fortress",
@@ -202,7 +217,8 @@
     "symbol": "🛡",
     "color": "#f9d77e",
     "description": "Bangun menara dengan radius dan anggaran terbatas, lalu pertahankan benteng dari gelombang monster.",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "velocity-rush",
@@ -214,7 +230,8 @@
     "genre": "Arcade racing",
     "color": "#ffb44a",
     "symbol": "🏁",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "bridge-master",
@@ -226,7 +243,8 @@
     "genre": "Construction adventure",
     "color": "#94e3a5",
     "symbol": "🌉",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "number-factory",
@@ -238,7 +256,8 @@
     "genre": "Factory simulation",
     "color": "#ffd86c",
     "symbol": "⚙",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "deep-blue",
@@ -250,7 +269,8 @@
     "genre": "Underwater exploration",
     "color": "#48e6de",
     "symbol": "🐠",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "matrix-blox",
@@ -262,7 +282,8 @@
     "genre": "Spatial puzzle",
     "color": "#8bb5ff",
     "symbol": "◇",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "intersection-lock",
@@ -274,7 +295,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "vector-strike",
@@ -286,7 +308,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "parabola-reactor",
@@ -298,7 +321,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "distance-sensors",
@@ -310,7 +334,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "pythagoras-bridge",
@@ -322,7 +347,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "optimization-vault",
@@ -334,7 +360,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "trig-beacon",
@@ -346,7 +373,8 @@
     "genre": "Arena experiment",
     "symbol": "◆",
     "color": "#b2bcdf",
-    "archived": true
+    "archived": true,
+    "adventure": false
   },
   {
     "id": "aegis-orbia",
@@ -358,6 +386,20 @@
     "color": "#85e7e8",
     "symbol": "✦",
     "description": "Orin memulihkan tiga menara perisai: zona aman, keliling, perpotongan, cincin, dan badai meteor terakhir.",
-    "archived": false
+    "archived": false,
+    "adventure": true
+  },
+  {
+    "id": "orbia-prime",
+    "title": "Orbia Prime — Crown of the Last Shield",
+    "topic": "Persamaan lingkaran",
+    "level": "SMP/SMA",
+    "rounds": 3,
+    "genre": "Story survival adventure",
+    "color": "#f4ca86",
+    "symbol": "♛",
+    "description": "Pulihkan tiga menara Orbia dan bertahan dari badai meteor terakhir.",
+    "archived": false,
+    "adventure": true
   }
 ]

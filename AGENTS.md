@@ -11,3 +11,5 @@
 - Nexus Rift is a separate adventure featured above the user's ten selected games. Preserve all existing game source and order. Portal links open originals without changing or claiming their progress. Nexus checkpoints are local and separate. Keep its own engine copy and files isolated.
 
 - Aegis of Orbia follows the reference `templates/meteor-original.html` visual identity and reuses its exact Slayer avatar function. Keep the new game isolated; do not modify other games during polish. Prioritize actual browser playtesting before quality claims.
+
+- Story Adventures use equally weighted cards, no automatic launch or flagship banner. Keep 10 selected individual games in their current order and 18 archived games. Preserve every previous game source.

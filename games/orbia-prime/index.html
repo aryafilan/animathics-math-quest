@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ORBIA PRIME | Crown of the Last Shield</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap');
+*{box-sizing:border-box;user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;background:#130d18;font-family:'Nunito',sans-serif;color:#fff;touch-action:none}
+canvas{display:block}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+.topbar{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.card{pointer-events:auto;background:rgba(20,13,29,.86);backdrop-filter:blur(12px);border:1.5px solid rgba(255,192,123,.45);box-shadow:0 16px 40px rgba(0,0,0,.35);padding:16px 18px;border-radius:22px}
+.main{max-width:520px}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;background:linear-gradient(90deg,#ff7a18,#ffcf66);color:#2b1204;font-family:'Fredoka',sans-serif;font-size:11px;font-weight:700;letter-spacing:.4px}
+.card h1{margin:7px 0 4px;font-family:'Fredoka',sans-serif;font-size:28px;color:#ffe0a2;line-height:1}
+.subtitle{margin:0 0 8px;color:#c9f5ff;font-size:14px;font-weight:800;letter-spacing:.2px}
+.story{margin:0;color:#ffd9c8;font-size:13px;line-height:1.45}
+.eq{margin-top:10px;padding:10px 14px;border-radius:14px;background:#0e1a25;border:1.5px solid #59e9ff;color:#78f1ff;font-weight:900;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center;white-space:pre-line}
+.side{display:flex;flex-direction:column;gap:10px;min-width:245px}
+.pill{padding:12px 15px;border-radius:18px;background:rgba(20,13,29,.88);border:1.5px solid rgba(255,192,123,.35);box-shadow:0 12px 28px rgba(0,0,0,.26);font-weight:900;font-size:14px}
+.pill b{color:#8ef1ff}
+#coordsPanel{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);padding:11px 20px;border-radius:999px;background:rgba(14,10,18,.9);border:2px solid rgba(89,233,255,.55);font-weight:900;box-shadow:0 10px 25px rgba(0,0,0,.28)}
+#coordsPanel b{color:#9fffb6}
+#hintBar{position:absolute;left:18px;bottom:18px;padding:11px 14px;border-radius:16px;background:rgba(20,13,29,.84);border:1.5px solid rgba(255,192,123,.3);font-size:12px;font-weight:800;color:#ffd9c8;max-width:340px}
+#topRight{position:absolute;right:16px;bottom:16px;display:flex;gap:10px;pointer-events:auto}
+#topRight button,#topRight a{border:0;border-radius:14px;padding:11px 14px;font:inherit;font-weight:900;text-decoration:none;color:#1d1620;background:#ffe0a2;box-shadow:0 6px 0 #d58d4d;cursor:pointer}
+#topRight button.secondary{background:#8eefff;box-shadow:0 6px 0 #39aec8}
+#topRight button.dark{background:#39263f;color:#fff;box-shadow:0 6px 0 #241228}
+#toast{position:fixed;top:104px;left:50%;transform:translateX(-50%);padding:11px 20px;border-radius:999px;background:#111925;border:2px solid #7befff;color:#fff;font-weight:900;opacity:0;transition:opacity .2s;z-index:30;pointer-events:none;box-shadow:0 10px 26px rgba(0,0,0,.3)}
+#toast.show{opacity:1}
+#flash{position:fixed;inset:0;background:rgba(255,255,255,0);pointer-events:none;z-index:25;transition:background .15s}
+#flash.hit{background:rgba(215,245,255,.55)}
+#overlay{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(20,23,43,.55),rgba(6,4,10,.88));backdrop-filter:blur(8px);z-index:40;padding:20px}
+#overlay.hidden{display:none!important}
+.dialog{width:min(560px,100%);padding:30px 28px;border-radius:30px;background:linear-gradient(180deg,rgba(28,21,37,.97),rgba(18,12,25,.96));border:2px solid rgba(255,210,140,.45);box-shadow:0 25px 70px rgba(0,0,0,.55);text-align:center}
+.heroMark{width:100px;height:100px;border-radius:50%;margin:0 auto 12px;background:radial-gradient(circle,#8ef1ff 0%,#4c86ff 35%,#402444 100%);display:grid;place-items:center;color:#fff;font-size:54px;box-shadow:0 0 40px rgba(142,241,255,.45)}
+.dialog small{display:block;color:#ffd5bf;font-weight:900;letter-spacing:1.2px}
+.dialog h2{font-family:'Fredoka',sans-serif;font-size:42px;line-height:.95;color:#ffe4b3;margin:10px 0 5px}
+.dialog h2 em{font-style:normal;color:#8eefff}
+.dialog p{font-size:15px;line-height:1.58;color:#f8d7c5;margin:12px 0 16px}
+.dialog .row{display:flex;gap:12px;flex-wrap:wrap}
+.dialog button,.dialog a{flex:1;min-width:160px;border:0;border-radius:16px;padding:15px 18px;font:inherit;font-weight:900;text-decoration:none;cursor:pointer}
+.primary{background:linear-gradient(135deg,#ffb25d,#ff7a18);color:#251207;box-shadow:0 7px 0 #cb6316}
+.secondary{background:linear-gradient(135deg,#8eefff,#6eb4ff);color:#08111e;box-shadow:0 7px 0 #3079c5}
+.ghost{background:#37253d;color:#fff;box-shadow:0 7px 0 #221327}
+#chapterCinematic{position:fixed;inset:0;display:grid;place-items:center;z-index:22;pointer-events:none;opacity:0;transition:opacity .35s}
+#chapterCinematic.show{opacity:1}
+#chapterCinematic .banner{padding:20px 28px;border-radius:24px;background:rgba(13,10,18,.72);border:1px solid rgba(255,210,140,.35);backdrop-filter:blur(8px);text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.3)}
+#chapterCinematic h3{font-family:'Fredoka',sans-serif;font-size:36px;color:#ffe6b8;margin:0 0 4px}
+#chapterCinematic p{margin:0;color:#c6f9ff;font-weight:900}
+@media (max-width:900px){.card.main{max-width:none;width:100%}.side{min-width:unset;width:100%}#coordsPanel{bottom:88px}#hintBar{display:none}#topRight{bottom:16px;left:16px;right:16px;justify-content:center;flex-wrap:wrap}#topRight button,#topRight a{flex:1 1 30%}}
+</style>
+</head>
+<body>
+<div id="hud">
+  <div class="topbar">
+    <div class="card main">
+      <span class="badge">STORY ADVENTURE • PERSAMAAN LINGKARAN</span>
+      <h1 id="stageTitle">ORBIA PRIME</h1>
+      <div class="subtitle" id="stageSubtitle">Crown of the Last Shield</div>
+      <p class="story" id="stageStory">Orin, penjaga terakhir Orbia, harus membangunkan tiga menara perisai sebelum hujan meteor mematikan menelan seluruh cakrawala.</p>
+      <div class="eq" id="stageEq">(x − 2)^2 + (y − 1)^2 ≤ 4</div>
+    </div>
+    <div class="side">
+      <div class="pill">ACT: <b id="stAct">1 / 3</b></div>
+      <div class="pill">NYAWA: <b id="stLives">❤️❤️❤️</b></div>
+      <div class="pill">CORE SHIELD: <b id="stCore">0%</b></div>
+      <div class="pill">METEOR: <b id="stTimer">siaga</b></div>
+    </div>
+  </div>
+  <div id="coordsPanel">Posisi Orin: <b id="posText">(0.0, 0.0)</b></div>
+  <div id="hintBar">WASD bergerak • SPACE lompat • SHIFT dash • E aktifkan segel • P pass • mouse putar kamera</div>
+  <div id="topRight">
+    <button id="passBtn" class="secondary">PASS ⏩</button>
+    <button id="pauseBtn" class="dark">PAUSE</button>
+    <button id="audioBtn" class="dark">♫</button>
+    <a href="../../index.html">Katalog</a>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="flash"></div>
+<div id="chapterCinematic"><div class="banner"><h3 id="cinTitle"></h3><p id="cinText"></p></div></div>
+<div id="overlay"><div class="dialog"><div class="heroMark">✦</div><small>ANIMATHICS STUDIO</small><h2>ORBIA PRIME<br><em>CROWN OF THE LAST SHIELD</em></h2><p>Dunia Orbia runtuh oleh badai meteor. Orin harus memulihkan menara perisai: <b>Sanctuary</b>, <b>Echo Ring</b>, dan <b>Last Crown</b>.</p><div class="row"><button id="startBtn" class="primary">Mulai petualangan</button><button id="demoBtn" class="secondary">Mode presentasi</button></div></div></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+const $ = s => document.querySelector(s);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x130d18);
+scene.fog = new THREE.FogExp2(0x130d18,0.012);
+const camera = new THREE.PerspectiveCamera(58, innerWidth/innerHeight, 0.1, 320);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+document.body.prepend(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffd8b6,0x171229,1.85));
+const sun = new THREE.DirectionalLight(0xffbc72,2.6); sun.position.set(22,34,18); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048); scene.add(sun);
+const fill = new THREE.DirectionalLight(0x72dfff,1.2); fill.position.set(-10,8,-15); scene.add(fill);
+const fxRoot = new THREE.Group(); scene.add(fxRoot);
+function rr(ctx,x,y,w,h,r){ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x,y,w,h,r); else ctx.rect(x,y,w,h); ctx.closePath();}
+function sfx(freq=540,dur=.12,type='sine',vol=.05){ if(state.mute) return; try{ const ac=sfx.ac||(sfx.ac=new (window.AudioContext||window.webkitAudioContext)()); if(ac.state==='suspended') ac.resume(); const o=ac.createOscillator(), g=ac.createGain(); o.type=type; o.frequency.value=freq; g.gain.setValueAtTime(vol,ac.currentTime); g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+dur); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+dur+.01); }catch(e){} }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),2300); }
+function flash(){ $('#flash').classList.add('hit'); clearTimeout(flash.t); flash.t=setTimeout(()=>$('#flash').classList.remove('hit'),170); }
+function material(c,opt={}){ return new THREE.MeshStandardMaterial(Object.assign({color:c, metalness:0.25, roughness:0.65},opt)); }
+function mesh(geo,mat,x=0,y=0,z=0,parent=scene){ const m=new THREE.Mesh(geo,mat); m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; parent.add(m); return m; }
+function label(text,x,y,z,fg='#ffe0a8',bg='rgba(16,12,22,.85)',scale=1.3,parent=scene){ const c=document.createElement('canvas'); c.width=320; c.height=96; const ctx=c.getContext('2d'); ctx.fillStyle=bg; rr(ctx,6,6,308,84,22); ctx.fill(); ctx.strokeStyle=fg; ctx.lineWidth=4; ctx.stroke(); ctx.font='900 42px Nunito, sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle=fg; ctx.fillText(text,160,48); const tex=new THREE.CanvasTexture(c); const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false})); sp.position.set(x,y,z); sp.scale.set(scale*2.4,scale*.72,1); parent.add(sp); return sp; }
+function canvasTex(base,edge){ const c=document.createElement('canvas'); c.width=c.height=128; const ctx=c.getContext('2d'); ctx.fillStyle=base; ctx.fillRect(0,0,128,128); ctx.strokeStyle=edge; ctx.lineWidth=4; ctx.strokeRect(4,4,120,120); for(let i=0;i<6;i++){ ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.strokeRect(12+i*4,12+i*4,104-i*8,104-i*8); } return new THREE.CanvasTexture(c); }
+const STEP = 2.45;
+const state={started:false,demo:false,mute:false,lives:3,stage:0,health:0,timer:0,mode:'intro',impact:false,impactAge:0,goodImpact:false,passLock:false,dashing:0};
+const acts=[
+  {title:'Fallen Sanctuary', subtitle:'Act I · Wake the First Shield', story:'Menara pertama di taman langit masih hidup. Badai meteor akan tiba. Berdirilah di wilayah aman agar perisai bangkit kembali.', eq:'(x − 2)^2 + (y − 1)^2 ≤ 4', type:'zone', a:2,b:1,r:2, timer:12, palette:0},
+  {title:'Ring of Echoes', subtitle:'Act II · Seal the Echo Ring', story:'Gerbang menuju menara inti terkunci. Dua segel di keliling lingkaran harus diaktifkan agar jalur cahaya terbuka.', eq:'x^2 + y^2 = 9', type:'ring', r:3, need:2, palette:1},
+  {title:'Last Crown', subtitle:'Act III · Crown of the Last Shield', story:'Di puncak menara, perisai dunia hanya menyala jika Orin bertahan tepat di pusat mahkotanya saat hujan meteor pamungkas menghantam.', eq:'x^2 + (y + 2)^2 ≤ 2.25', type:'zone', a:0,b:-2,r:1.5, timer:13, palette:2}
+];
+const palettes=[
+  {sky:0x182033,fog:0.011,stone:0x54435d,edge:0x816c80,accent:0x7cecff,trim:0xffcb86,leaf:0x9ad4b7,glow:0x8af5ff},
+  {sky:0x241830,fog:0.013,stone:0x4a4059,edge:0x6e618d,accent:0xc6a7ff,trim:0xffc77a,leaf:0xb7a6e7,glow:0x9eebff},
+  {sky:0x120f20,fog:0.016,stone:0x47374a,edge:0x7f5c62,accent:0x8bf7ea,trim:0xffb56f,leaf:0xbe8ca0,glow:0x96fff0}
+];
+const world={root:new THREE.Group(), decos:[], clouds:[], meteors:[], particles:[], nodes:[], domes:[], crown:null, boss:null, towerCrystals:[]}; scene.add(world.root);
+function createSlayer(){
+  const root = new THREE.Group();
+  const armor = new THREE.MeshStandardMaterial({color:0x1a2c3b, metalness:0.78, roughness:0.28});
+  const plate = new THREE.MeshStandardMaterial({color:0x314d62, metalness:0.7, roughness:0.32});
+  const dark  = new THREE.MeshStandardMaterial({color:0x0a1119, metalness:0.55, roughness:0.38});
+  const cyan  = new THREE.MeshStandardMaterial({color:0x00dfff, emissive:0x00b8ff, emissiveIntensity:1.5});
+  const gold  = new THREE.MeshStandardMaterial({color:0xffbc42, metalness:0.7, roughness:0.24});
+  const skin  = new THREE.MeshStandardMaterial({color:0xd89768, roughness:0.72});
+  const mesh = (geo, mat, x=0,y=0,z=0) => { const m = new THREE.Mesh(geo,mat); m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; root.add(m); return m; };
+
+  // Torso berlapis dan inti energi dada.
+  mesh(new THREE.BoxGeometry(1.22,1.32,.66), armor, 0,1.62,0);
+  mesh(new THREE.BoxGeometry(1.04,.98,.16), plate, 0,1.72,-.39);
+  mesh(new THREE.BoxGeometry(1.31,.16,.76), gold, 0,1.22,0);
+  const core = mesh(new THREE.OctahedronGeometry(.25,0), cyan, 0,1.78,-.52);
+  mesh(new THREE.BoxGeometry(.68,.08,.06), cyan, 0,2.13,-.48);
+
+  // Kepala kotak khas Roblox dengan helm tempur dan visor menyala.
+  mesh(new THREE.BoxGeometry(.82,.78,.72), skin, 0,2.72,0);
+  mesh(new THREE.BoxGeometry(.94,.30,.82), armor, 0,3.08,0);
+  mesh(new THREE.BoxGeometry(.95,.25,.18), dark, 0,2.77,-.42);
+  mesh(new THREE.BoxGeometry(.76,.12,.07), cyan, 0,2.77,-.53);
+  mesh(new THREE.BoxGeometry(.13,.38,.64), gold, 0,3.02,-.46);
+  for(const s of [-1,1]){
+    const fin = mesh(new THREE.ConeGeometry(.16,.55,4), cyan, s*.48,3.25,.03);
+    fin.rotation.z = s*.55;
+  }
+
+  function arm(x, flip){
+    const g = new THREE.Group(); g.position.set(x,2.2,0); root.add(g);
+    const add = (geo,mat,px,py,pz) => { const m=new THREE.Mesh(geo,mat); m.position.set(px,py,pz); m.castShadow=true; g.add(m); return m; };
+    add(new THREE.SphereGeometry(.39,12,8), plate,0,-.05,0);
+    add(new THREE.BoxGeometry(.48,.58,.5), armor,0,-.43,0);
+    add(new THREE.BoxGeometry(.54,.12,.56), gold,0,-.68,0);
+    add(new THREE.BoxGeometry(.44,.48,.46), plate,0,-.95,0);
+    add(new THREE.BoxGeometry(.48,.28,.48), dark,0,-1.30,-.02);
+    const stripe = add(new THREE.BoxGeometry(.12,.40,.05), cyan,flip*.17,-.98,-.25);
+    return g;
+  }
+  const lArm = arm(-.88,-1), rArm = arm(.88,1);
+
+  function leg(x){
+    const g = new THREE.Group(); g.position.set(x,1.02,0); root.add(g);
+    const add = (geo,mat,px,py,pz) => { const m=new THREE.Mesh(geo,mat); m.position.set(px,py,pz); m.castShadow=true; g.add(m); return m; };
+    add(new THREE.BoxGeometry(.52,.58,.54), armor,0,-.30,0);
+    add(new THREE.BoxGeometry(.60,.12,.58), gold,0,-.58,0);
+    add(new THREE.BoxGeometry(.48,.58,.50), plate,0,-.93,.03);
+    add(new THREE.BoxGeometry(.58,.28,.78), dark,0,-1.34,-.12);
+    add(new THREE.BoxGeometry(.12,.36,.06), cyan,0,-.93,-.27);
+    return g;
+  }
+  const lLeg = leg(-.31), rLeg = leg(.31);
+
+  // Jetpack, pendorong, dan pedang energi di punggung.
+  const pack = new THREE.Group(); pack.position.set(0,1.78,.46); root.add(pack);
+  for(const s of [-1,1]){
+    const jet = new THREE.Mesh(new THREE.CylinderGeometry(.18,.24,.70,10), plate); jet.position.set(s*.34,0,0); jet.rotation.x=Math.PI/2; jet.castShadow=true; pack.add(jet);
+    const flame = new THREE.Mesh(new THREE.ConeGeometry(.17,.52,8), cyan); flame.position.set(s*.34,0,.48); flame.rotation.x=Math.PI/2; pack.add(flame);
+  }
+  const blade = new THREE.Mesh(new THREE.BoxGeometry(.13,1.42,.18), cyan); blade.position.set(.52,.38,.22); blade.rotation.z=-.48; pack.add(blade);
+  const hilt = new THREE.Mesh(new THREE.BoxGeometry(.48,.13,.18), gold); hilt.position.set(.18,-.18,.22); hilt.rotation.z=-.48; pack.add(hilt);
+  return {root, lArm, rArm, lLeg, rLeg, core, pack};
+}
+const slayer = createSlayer();
+scene.add(slayer.root);
+slayer.root.scale.setScalar(.98); slayer.root.position.set(0,.2,5.5);
+function clearWorld(){ for(const root of [world.root,fxRoot]){const geo=new Set(),mat=new Set(),tex=new Set();root.traverse(o=>{if(o.geometry)geo.add(o.geometry);for(const m of (Array.isArray(o.material)?o.material:[o.material]))if(m){mat.add(m);if(m.map)tex.add(m.map)}});root.clear();geo.forEach(g=>g.dispose());mat.forEach(m=>m.dispose());tex.forEach(t=>t.dispose());} world.decos=[]; world.clouds=[]; world.meteors=[]; world.particles=[]; world.nodes=[]; world.domes=[]; world.towerCrystals=[]; world.boss=null; world.crown=null; }
+function buildCloud(x,y,z,s=1,color=0xeef6ff){ const g=new THREE.Group(); g.position.set(x,y,z); const mat=new THREE.MeshBasicMaterial({color,transparent:true,opacity:.34}); for(const [dx,dy,dz,r] of [[0,0,0,1.4],[1,0.2,.3,1.1],[-1,.1,.2,1.2],[.4,.35,-.4,.9]]){ const c=mesh(new THREE.SphereGeometry(r*s,12,10),mat,dx*s,dy*s,dz*s,g); c.scale.y=.7; } world.root.add(g); world.clouds.push(g); return g; }
+function addParticleBurst(x,y,z,color=0x99efff,n=18){ for(let i=0;i<n;i++){ const mat=new THREE.MeshBasicMaterial({color,transparent:true,opacity:1}); const p=mesh(new THREE.OctahedronGeometry(.08+Math.random()*.15,0),mat,x,y,z,fxRoot); world.particles.push({m:p,v:new THREE.Vector3((Math.random()-.5)*6,2+Math.random()*5,(Math.random()-.5)*6),life:.7+Math.random()*.8}); } }
+function buildTower(x,z,pal,height=6,coreScale=1){ const g=new THREE.Group(); g.position.set(x,0,z); world.root.add(g); const dark=material(pal.stone,{metalness:.38,roughness:.55}); const edge=material(pal.edge,{metalness:.18,roughness:.72}); const trim=material(pal.trim,{metalness:.65,roughness:.28}); const glow=material(pal.glow,{emissive:pal.glow,emissiveIntensity:.75,metalness:.12,roughness:.35}); mesh(new THREE.CylinderGeometry(2.35,2.75,.65,8),edge,0,.32,0,g); mesh(new THREE.CylinderGeometry(1.55,1.95,height,8),dark,0,height/2+.25,0,g); for(let y=1.15;y<height;y+=1){ const tr=mesh(new THREE.TorusGeometry(1.52,.08,8,24),trim,0,y,0,g); tr.rotation.x=Math.PI/2; } for(let i=0;i<4;i++){ const a=i*Math.PI/2+Math.PI/4; const p=mesh(new THREE.BoxGeometry(.38,height-.6,.38),edge,Math.cos(a)*1.45,height/2,Math.sin(a)*1.45,g); p.rotation.y=a; } mesh(new THREE.CylinderGeometry(1.92,1.55,.45,8),trim,0,height+.08,0,g); const core=mesh(new THREE.OctahedronGeometry(.9*coreScale,0),glow,0,height+1.05,0,g); world.towerCrystals.push(core); const ring=mesh(new THREE.TorusGeometry(1.4,.11,8,30),glow,0,height+.76,0,g); ring.rotation.x=Math.PI/2; return g; }
+function buildDragonBoss(){ const boss=new THREE.Group(); boss.position.set(0,5.8,-18); world.root.add(boss); world.boss=boss; const bMat=material(0x4e2330,{metalness:.65,roughness:.3}); const plate=material(0x22141b,{metalness:.84,roughness:.22}); const lava=material(0xff8f4b,{emissive:0xff6220,emissiveIntensity:1.2,metalness:.15,roughness:.4}); const horn=material(0x18151e,{metalness:.88,roughness:.15}); const torso=mesh(new THREE.DodecahedronGeometry(2.8,0),bMat,0,0,0,boss); torso.scale.set(1,1.25,.78); mesh(new THREE.OctahedronGeometry(.95,0),lava,0,.2,2.2,boss); for(let y=-.5;y<=1.0;y+=.5){ const p=mesh(new THREE.BoxGeometry(3.9,.26,.24),plate,0,y,2.0,boss); p.rotation.x=-.15; } const head=new THREE.Group(); head.position.set(0,3.9,.6); boss.add(head); mesh(new THREE.DodecahedronGeometry(1.45,0),bMat,0,.18,0,head); mesh(new THREE.BoxGeometry(2.1,.76,1.4),bMat,0,-.25,1.0,head); for(const s of [-1,1]){ mesh(new THREE.SphereGeometry(.18,10,8),lava,s*.54,.22,1.28,head); const h=mesh(new THREE.ConeGeometry(.25,1.25,6),horn,s*.92,.95,-.08,head); h.rotation.z=s*.55; } for(const s of [-1,1]){ const wing=new THREE.Group(); wing.position.set(s*2.1,1.5,-.3); boss.add(wing); const bone=mesh(new THREE.CylinderGeometry(.16,.28,5.3,8),horn,s*1.7,.3,0,wing); bone.rotation.z=s*.95; const membrane=mesh(new THREE.ConeGeometry(2.2,4.8,3),material(0x763247,{emissive:0x2e0812,transparent:true,opacity:.88,side:THREE.DoubleSide}),s*2.8,.0,-.06,wing); membrane.rotation.z=s*Math.PI/2; world.decos.push({type:'wing',wing,s}); } }
+function nodePedestal(cx,cy,text,correct,pal){ const g=new THREE.Group(); const wx=cx*STEP, wz=-cy*STEP; g.position.set(wx,0,wz); world.root.add(g); mesh(new THREE.CylinderGeometry(.52,.72,.24,8), material(0x7d6776,{metalness:.45,roughness:.35}),0,.12,0,g); const glow=0xffb791; const gem=mesh(new THREE.OctahedronGeometry(.44,0), material(glow,{emissive:glow, emissiveIntensity:.75, roughness:.25}),0,.92,0,g); const halo=mesh(new THREE.TorusGeometry(.72,.06,8,30), material(0xbd7b71,{emissive:0xbd7b71,emissiveIntensity:.35}),0,.16,0,g); halo.rotation.x=Math.PI/2; label(text,0,1.8,0,'#ffceb9','rgba(20,11,17,.85)',.88,g); world.nodes.push({g,cx,cy,gem,halo,correct,active:false}); return g; }
+function shieldDome(cx,cy,r,color=0x7fefff){ const g=new THREE.Group(); g.position.set(cx*STEP,0,-cy*STEP); world.root.add(g); const shell=mesh(new THREE.SphereGeometry(r*STEP,28,20,0,Math.PI*2,0,Math.PI/2), new THREE.MeshBasicMaterial({color,transparent:true,opacity:.2,side:THREE.DoubleSide}),0,0,0,g); shell.scale.y=.78; const wire=mesh(new THREE.SphereGeometry(r*STEP,18,12,0,Math.PI*2,0,Math.PI/2), new THREE.MeshBasicMaterial({color,wireframe:true,transparent:true,opacity:.11,side:THREE.DoubleSide}),0,0,0,g); wire.scale.y=.78; const ring=mesh(new THREE.TorusGeometry(r*STEP,.09,10,80), new THREE.MeshBasicMaterial({color,transparent:true,opacity:.5}),0,.03,0,g); ring.rotation.x=Math.PI/2; world.domes.push({g,shell,wire,ring}); return g; }
+function buildArena(idx){ clearWorld(); const act=acts[idx], pal=palettes[act.palette]; scene.background.set(pal.sky); scene.fog.color.set(pal.sky); scene.fog.density=pal.fog; sun.color.set(act.palette===2?0xffa164:0xffc888); fill.color.set(act.palette===1?0xc8b6ff:0x83e6ff);
+ const tile=canvasTex('#3f2f49','#7b687f'), axis=canvasTex('#4e3c54','#ffc780'); const floorMat=new THREE.MeshStandardMaterial({color:pal.stone,roughness:.85}); mesh(new THREE.BoxGeometry(30,1.1,30),floorMat,0,-.6,0,world.root); mesh(new THREE.BoxGeometry(28.5,.22,28.5),material(pal.edge,{roughness:.9}),0,0,0,world.root);
+ for(let gx=-4;gx<=4;gx++) for(let gy=-4;gy<=4;gy++){ const wx=gx*STEP, wz=-gy*STEP; const tileMat=new THREE.MeshStandardMaterial({map:(gx===0||gy===0)?axis:tile, roughness:.72}); mesh(new THREE.BoxGeometry(2.2,.18,2.2),tileMat,wx,.11,wz,world.root); if(gx===0&&gy!==0) label(String(gy), wx+.42,.44,wz,'#ffe1a9','rgba(25,18,27,.76)',.7,world.root); if(gy===0&&gx!==0) label(String(gx), wx,.44,wz+.42,'#ffe1a9','rgba(25,18,27,.76)',.7,world.root); }
+ mesh(new THREE.BoxGeometry(22,.08,.12),material(pal.trim,{emissive:pal.trim,emissiveIntensity:.25}),0,.22,0,world.root); mesh(new THREE.BoxGeometry(.12,.08,22),material(pal.trim,{emissive:pal.trim,emissiveIntensity:.25}),0,.22,0,world.root); label('X', STEP*4.3,.92,0,'#8ceeff','rgba(13,17,24,.86)',1.0,world.root); label('Y', 0,.92,-STEP*4.3,'#8ceeff','rgba(13,17,24,.86)',1.0,world.root);
+ for(const s of [-1,1]){ mesh(new THREE.BoxGeometry(27,.32,.48),material(pal.trim,{metalness:.5,roughness:.28}),0,-.02,s*13.1,world.root); mesh(new THREE.BoxGeometry(.48,.32,27),material(pal.trim,{metalness:.5,roughness:.28}),s*13.1,-.02,0,world.root); }
+ for(let i=0;i<10;i++){ const a=i*Math.PI*2/10, r=16.5+Math.random()*14; const rock=mesh(new THREE.DodecahedronGeometry(1.1+Math.random()*1.9,0), material(pal.edge,{roughness:.95}),Math.cos(a)*r,-4-Math.random()*7,Math.sin(a)*r,world.root); rock.scale.y=.8+Math.random()*.7; world.decos.push({type:'rock',o:rock,phase:Math.random()*6}); }
+ for(let i=0;i<9;i++) buildCloud(-22+i*5.5, 13+Math.random()*6, -30+Math.random()*18, 1+Math.random()*1.1, act.palette===2?0xe8d8f0:0xeaf5ff);
+ for(let i=0;i<18;i++){ const x=(Math.random()-.5)*24, z=(Math.random()-.5)*24; if(Math.abs(x)<5&&Math.abs(z)<5) continue; const crystal=mesh(new THREE.OctahedronGeometry(.18+Math.random()*.12,0), material(pal.glow,{emissive:pal.glow, emissiveIntensity:.85}),x,.28+Math.random()*.25,z,world.root); world.decos.push({type:'crystal',o:crystal,baseY:crystal.position.y,phase:Math.random()*6}); }
+ if(idx===0){ buildTower(0,-15,pal,6.8,1.15); for(const p of [[-10,-8],[10,-8],[-10,8],[10,8],[-12,0],[12,0]]){ const g=new THREE.Group(); g.position.set(p[0],0,p[1]); world.root.add(g); mesh(new THREE.CylinderGeometry(.16,.34,2.1,7),material(0x85706a),0,1.1,0,g); for(const [dx,dy,dz,r] of [[0,2.3,0,1.2],[.5,2.6,.3,.9],[-.5,2.5,.2,.95]]){ const c=mesh(new THREE.SphereGeometry(r,12,10),material(pal.leaf,{roughness:1}),dx,dy,dz,g); c.scale.y=.7; } } shieldDome(act.a,act.b,act.r,pal.glow); }
+ if(idx===1){ buildTower(0,-15,pal,7.4,1.2); buildTower(-7,-15,pal,5.4,.8); buildTower(7,-15,pal,5.4,.8); for(let s of [-1,1]){ const arch=new THREE.Group(); arch.position.set(s*8.5,0,-8); world.root.add(arch); mesh(new THREE.BoxGeometry(1,5,1),material(pal.edge),0,2.5,0,arch); const h=mesh(new THREE.TorusGeometry(1.5,.25,8,28,Math.PI),material(pal.trim,{metalness:.6,roughness:.3}),0,5,0,arch); h.rotation.z=Math.PI/2; } for(const [x,y] of [[3,0],[-3,0],[0,3],[0,-3],[2,2],[-2,-2]]) nodePedestal(x,y,`(${x}, ${y})`, Math.abs(x*x+y*y-9)<1e-9, pal); shieldDome(0,0,3,pal.accent); }
+ if(idx===2){ buildTower(0,-15,pal,8.5,1.35); buildDragonBoss(); world.crown = shieldDome(act.a,act.b,act.r,pal.glow); for(let i=0;i<12;i++){ const a=i*Math.PI*2/12; mesh(new THREE.CylinderGeometry(.14,.18,2.8,8),material(pal.trim,{metalness:.65,roughness:.3}),Math.cos(a)*11.9,1.4,Math.sin(a)*11.9,world.root); const orb=mesh(new THREE.SphereGeometry(.26,10,8),material(pal.glow,{emissive:pal.glow,emissiveIntensity:1.1}),Math.cos(a)*11.9,3.0,Math.sin(a)*11.9,world.root); world.decos.push({type:'orb',o:orb,phase:i}); } }
+ }
+function setStage(i){ state.stage=i; state.health=Math.round(i/acts.length*100); const act=acts[i]; state.mode='play'; state.impact=false; state.impactAge=0; state.goodImpact=false; state.passLock=false; state.dashing=0; if(act.type==='zone') state.timer=act.timer; $('#stageTitle').textContent=act.title; $('#stageSubtitle').textContent=act.subtitle; $('#stageStory').textContent=act.story; $('#stageEq').textContent=act.eq; $('#stAct').textContent=`${i+1} / ${acts.length}`; $('#stTimer').textContent=act.type==='zone'? act.timer.toFixed(1)+' dtk' : 'aktifkan segel'; buildArena(i); slayer.root.position.set(0,.2,5.5); velY=0; keys.clear(); selectedNodes.clear(); showChapter(act.title, act.subtitle); updateHUD(); }
+function showChapter(title,subtitle){ $('#cinTitle').textContent=title; $('#cinText').textContent=subtitle; const c=$('#chapterCinematic'); c.classList.add('show'); clearTimeout(showChapter.t); showChapter.t=setTimeout(()=>c.classList.remove('show'),1800); }
+function updateHUD(){ $('#stLives').textContent='❤️'.repeat(state.lives)+'🖤'.repeat(3-state.lives); $('#stCore').textContent = state.health+'%'; }
+let velY=0, camYaw=0, camPitch=.52, camDist=17.8, walkT=0;
+const keys=new Set(), selectedNodes=new Set();
+addEventListener('keydown',e=>{ keys.add(e.code); if(e.code==='Space' && slayer.root.position.y<=.22){ velY=8.7; sfx(380,.09,'triangle'); } if(e.code==='ShiftLeft' || e.code==='ShiftRight') dash(); if(e.code==='KeyE') activate(); if(e.code==='KeyP') passStage(); });
+addEventListener('keyup',e=>keys.delete(e.code));
+let drag=false,lx=0,ly=0; renderer.domElement.addEventListener('pointerdown',e=>{ drag=true; lx=e.clientX; ly=e.clientY; }); addEventListener('pointermove',e=>{ if(!drag) return; camYaw -= (e.clientX-lx)*0.005; camPitch = THREE.MathUtils.clamp(camPitch+(e.clientY-ly)*0.004, .18, 1.15); lx=e.clientX; ly=e.clientY; }); addEventListener('pointerup',()=>drag=false);
+addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+function dash(){ if(state.mode!=='play' || state.dashing) return; state.dashing=.16; sfx(300,.09,'sawtooth'); addParticleBurst(slayer.root.position.x,.8,slayer.root.position.z,0x9ef6ff,8); }
+function inCircle(x,y,a,b,r){ return ((x-a)*(x-a)+(y-b)*(y-b)) <= r*r+1e-9; }
+function currentPos(){ return [slayer.root.position.x/STEP, -slayer.root.position.z/STEP]; }
+function activate(){ if(!state.started || state.mode!=='play') return; const act=acts[state.stage]; if(act.type!=='ring') return; const nearest=world.nodes.find(n=>Math.hypot(n.g.position.x-slayer.root.position.x,n.g.position.z-slayer.root.position.z)<1.6 && !n.active); if(!nearest){ toast('Dekati salah satu segel.'); return; } if(!nearest.correct){ toast('Segel itu bukan titik pada lingkaran.'); sfx(140,.18,'triangle'); nearest.gem.material.emissive.set(0xff6e55); nearest.gem.material.color.set(0xffa391); setTimeout(()=>{ nearest.gem.material.emissive.set(0xffb791); nearest.gem.material.color.set(0xffb791); },420); return; } nearest.active=true; nearest.gem.material.color.set(0x8effd8); nearest.gem.material.emissive.set(0x8effd8); nearest.halo.material.color.set(0x8effd8); selectedNodes.add(nearest); addParticleBurst(nearest.g.position.x,1.0,nearest.g.position.z,0x8effd8,14); toast('Segel aktif!'); sfx(900,.16,'square'); if(selectedNodes.size>=act.need){ state.mode='resolve'; setTimeout(()=>advance(),600); } }
+function passStage(){ if(!state.started || state.mode!=='play' || state.passLock) return; state.demo=true; state.passLock=true; state.mode='resolve'; const act=acts[state.stage]; if(act.type==='ring'){ world.nodes.filter(n=>n.correct).slice(0,act.need).forEach(n=>{ if(!n.active){ n.active=true; n.gem.material.color.set(0x8effd8); n.gem.material.emissive.set(0x8effd8); } }); toast('PASS · segel diaktifkan'); setTimeout(()=>advance(),500); } else { const tx=act.a*STEP, tz=-act.b*STEP; slayer.root.position.set(tx,.2,tz); toast('PASS · Orin dipindahkan ke zona aman'); setTimeout(()=>meteorStrike(true),350); } }
+function meteorStrike(auto=false){ if(state.mode!=='play' && !auto) return; const act=acts[state.stage]; const [gx,gy]=currentPos(); const ok=inCircle(gx,gy,act.a,act.b,act.r); state.mode='impact'; state.goodImpact=ok; state.impactAge=0; flash(); for(let i=0;i<26;i++){ const x=(Math.random()-.5)*24, z=(Math.random()-.5)*24; const g=new THREE.Group(); g.position.set(x,16+Math.random()*6,z); mesh(new THREE.DodecahedronGeometry(.28+Math.random()*.34,0), material(0x8a4d45),0,0,0,g); const trail=mesh(new THREE.ConeGeometry(.22,2.6,10), new THREE.MeshBasicMaterial({color:0xff9a5f,transparent:true,opacity:.34}),0,1.4,0,g); trail.rotation.x=Math.PI; fxRoot.add(g); world.meteors.push({g,age:-Math.random()*.45}); } if(ok){ addParticleBurst(act.a*STEP,1.2,-act.b*STEP,0x8efeff,42); toast('Perisai bangkit!'); sfx(980,.3,'triangle'); } else { state.lives=Math.max(0,state.lives-1); updateHUD(); addParticleBurst(slayer.root.position.x,1.0,slayer.root.position.z,0xff9e8b,18); toast('Salah posisi! Orin terkena gelombang.'); sfx(170,.34,'sawtooth'); } }
+function advance(){ state.health=Math.round((state.stage+1)/acts.length*100); if(state.stage<acts.length-1) setStage(state.stage+1); else endGame(); }
+function endGame(){ state.mode='ended'; state.health=100; updateHUD(); scene.fog.density=.008; addParticleBurst(0,4,-5,0x9effef,80); $('#overlay').classList.remove('hidden'); $('#overlay .dialog').innerHTML = `<div class="heroMark">🛡️</div><small>ORBIA RESTORED</small><h2>THE LAST SHIELD<br><em>AWAKENS</em></h2><p>Orin menyalakan mahkota perisai terakhir. Ketiga menara menyala kembali. Orbia terlindungi.</p><div class="row"><button id="restartBtn" class="primary">Main lagi</button><button id="closeBtn" class="ghost">Tutup</button></div>`; $('#restartBtn').onclick=()=>{ $('#overlay').classList.add('hidden'); state.lives=3; selectedNodes.clear(); setStage(0); }; $('#closeBtn').onclick=()=>$('#overlay').classList.add('hidden'); }
+$('#startBtn').onclick=()=>{ state.started=true; $('#overlay').classList.add('hidden'); setStage(0); };
+if(new URLSearchParams(location.search).get('demo')==='1'){$('#startBtn').hidden=true;}
+$('#demoBtn').onclick=()=>{ state.started=true; state.demo=true; $('#overlay').classList.add('hidden'); setStage(0); toast('Mode presentasi aktif'); };
+$('#passBtn').onclick=passStage; $('#audioBtn').onclick=()=>{ state.mute=!state.mute; $('#audioBtn').textContent=state.mute?'♪̸':'♫'; }; $('#pauseBtn').onclick=()=>{ if(!state.started || !['play','pause'].includes(state.mode)) return; state.mode = state.mode==='pause' ? 'play' : 'pause'; toast(state.mode==='pause'?'Pause':'Lanjut'); };
+addEventListener('blur',()=>keys.clear());
+buildArena(0);
+const clock=new THREE.Clock();
+function animate(){ requestAnimationFrame(animate); const dt=Math.min(.04, clock.getDelta()), t=clock.elapsedTime; if(state.started && state.mode!=='pause' && state.mode!=='ended'){ let fwd=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0), side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0); const len=Math.hypot(fwd,side); let speed=7.2; if(state.dashing){ speed=15; state.dashing=Math.max(0,state.dashing-dt); } if(len>.05 && state.mode==='play'){ fwd/=len; side/=len; const vx=side*Math.cos(camYaw)-fwd*Math.sin(camYaw), vz=-side*Math.sin(camYaw)-fwd*Math.cos(camYaw); slayer.root.position.x=THREE.MathUtils.clamp(slayer.root.position.x+vx*speed*dt,-4.35*STEP,4.35*STEP); slayer.root.position.z=THREE.MathUtils.clamp(slayer.root.position.z+vz*speed*dt,-4.35*STEP,4.35*STEP); const rot=Math.atan2(-vx,-vz); slayer.root.rotation.y += Math.atan2(Math.sin(rot-slayer.root.rotation.y),Math.cos(rot-slayer.root.rotation.y))*Math.min(1,dt*12); walkT += dt*speed*2.2; } else walkT=0;
+ velY -= 23*dt; slayer.root.position.y=Math.max(.2, slayer.root.position.y+velY*dt); if(slayer.root.position.y<=.2) velY=0; const sw=len>.05?Math.sin(walkT)*.7:0; slayer.lArm.rotation.x=sw; slayer.rArm.rotation.x=-sw; slayer.lLeg.rotation.x=-sw; slayer.rLeg.rotation.x=sw; slayer.pack.position.y=1.78+Math.sin(t*4.2)*0.026; slayer.core.rotation.y += dt*5; slayer.core.rotation.x += dt*2;
+ const [gx,gy]=currentPos(); $('#posText').textContent=`(${gx.toFixed(1)}, ${gy.toFixed(1)})`;
+ const act=acts[state.stage]; if(state.mode==='play' && act.type==='zone'){ state.timer=Math.max(0,state.timer-dt); $('#stTimer').textContent=state.timer.toFixed(1)+' dtk'; if(state.timer<=0) meteorStrike(); }
+ if(state.mode==='impact'){ state.impactAge += dt; if(state.impactAge>1.25){ if(state.goodImpact) advance(); else if(state.lives<=0){ state.lives=3; selectedNodes.clear(); toast('Checkpoint ulang.'); setStage(state.stage); } else { selectedNodes.clear(); setStage(state.stage); } state.impactAge=0; } }
+ }
+ world.clouds.forEach((c,i)=>{ c.position.x += Math.sin(t*.15+i)*.005; c.position.z += Math.cos(t*.12+i)*.004; });
+ world.towerCrystals.forEach((c,i)=>{ c.rotation.y += dt*.8; c.position.y += Math.sin(t*2+i)*.0028; });
+ world.nodes.forEach((n,i)=>{ n.gem.rotation.y += dt*1.5; n.gem.position.y = .92 + Math.sin(t*2.4+i)*.08; n.gem.scale.setScalar(n.active?1.15:1.0); });
+ world.decos.forEach((d,i)=>{ if(d.type==='crystal'){ d.o.rotation.y += dt*1.5; d.o.position.y = d.baseY + Math.sin(t*2+d.phase)*.05; } if(d.type==='rock'){ d.o.position.y += Math.sin(t*.8+d.phase)*.003; d.o.rotation.y += dt*.15; } if(d.type==='wing') d.wing.rotation.z = d.s*(.12 + Math.sin(t*2+i)*.16); if(d.type==='orb') d.o.position.y = 3.0 + Math.sin(t*2+i)*.12; });
+ world.domes.forEach((d,i)=>{ d.shell.material.opacity = .15 + .04*Math.sin(t*3+i); d.wire.material.opacity = .08 + .03*Math.sin(t*2+i); d.ring.rotation.z += dt*.2; });
+ for(let i=world.meteors.length-1;i>=0;i--){ const m=world.meteors[i]; m.age += dt; m.g.position.y = 18 - m.age*28; m.g.position.x += dt*2.2; m.g.position.z += dt*1.5; if(m.g.position.y<.15){ fxRoot.remove(m.g); world.meteors.splice(i,1); } }
+ for(let i=world.particles.length-1;i>=0;i--){ const p=world.particles[i]; p.life -= dt; p.v.y -= 8*dt; p.m.position.addScaledVector(p.v,dt); p.m.rotation.y += dt*8; p.m.material.opacity = Math.max(0,p.life); if(p.life<=0){ fxRoot.remove(p.m); world.particles.splice(i,1); } }
+ if(world.boss){ world.boss.position.y = 5.8 + Math.sin(t*2.1)*.35; world.boss.rotation.y = Math.sin(t*.35)*.3; }
+ const focus=new THREE.Vector3(slayer.root.position.x*.58,1.4, slayer.root.position.z*.58 - 1.4); const camPos=new THREE.Vector3(focus.x + Math.sin(camYaw)*camDist*Math.cos(camPitch), focus.y + camDist*Math.sin(camPitch), focus.z + Math.cos(camYaw)*camDist*Math.cos(camPitch)); camera.position.lerp(camPos,.12); camera.lookAt(focus); renderer.render(scene,camera); }
+animate();
+</script>
+</body>
+</html>

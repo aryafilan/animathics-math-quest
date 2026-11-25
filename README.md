@@ -1,3 +1,9 @@
+# Math Quest · v0.7.1
+
+[Main catalog](https://aryafilan.github.io/animathics-math-quest/)
+
+Three equally sized Story Adventures (Nexus Rift, Aegis of Orbia, Orbia Prime), ten selected Individual Games in their original order, eighteen collapsed archive games. Orbia Prime is the previously local prototype, published separately with small initialization, demo and cleanup fixes. Desktop-first, visual WebGL testing not verified. No previous game source changed.
+
 # Math Quest · v0.7.0
 
 [Aegis of Orbia — The Last Shield](https://aryafilan.github.io/animathics-math-quest/games/aegis-orbia/) · [Demo mode](https://aryafilan.github.io/animathics-math-quest/games/aegis-orbia/?demo=1)

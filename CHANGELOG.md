@@ -1,3 +1,9 @@
+## v0.7.1 — Catalog hierarchy
+
+- Three equal Story Adventures cards replace Nexus-only banner.
+- Add local Orbia Prime prototype as a separate game.
+- Preserve 10 individual and 18 archived games.
+
 ## v0.7.0 — Aegis of Orbia
 
 - One new game with the original reference character, independent visual world, six challenges, and presentation pass.
